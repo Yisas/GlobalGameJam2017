@@ -104,8 +104,6 @@ public class FlyingCharacterController : MonoBehaviour
         {
             Vector3 moveDirection = (horizontalInput * right + verticalInput * forward).normalized;
             rb.AddForce(moveDirection * groundSpeed);
-
-            transform.Rotate(up, turnSpeed * horizontalRightStickInput);
         }
 
         // Airborne movement
@@ -123,7 +121,7 @@ public class FlyingCharacterController : MonoBehaviour
         }
 
         // Turning
-        transform.Rotate(up, turnSpeed * horizontalRightStickInput);
+        transform.Rotate(Vector3.up, turnSpeed * horizontalRightStickInput);
     }
 
     void TakeOff()
