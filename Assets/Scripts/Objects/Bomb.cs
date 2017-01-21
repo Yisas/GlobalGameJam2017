@@ -24,10 +24,15 @@ public class Bomb : MonoBehaviour
 
     void OnTriggerEnter(Collider col)
     {
+
+        Debug.Log("Bomb collided with " + col);
+
         Collider[] collisions = Physics.OverlapSphere(transform.position, aoeRadius);
 
         foreach (Collider hit in collisions)
         {
+            Debug.Log("Bomb aoe hit " + hit);
+
             if(hit.tag == "Slowable")
             {
                 hit.gameObject.GetComponent<Slowable>().Slow(slowdownMultiplier);
