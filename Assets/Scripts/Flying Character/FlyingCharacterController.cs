@@ -13,17 +13,21 @@ public class FlyingCharacterController : MonoBehaviour
     public float angularTiltSpeed;
     public float maxTilt;
 
+    public GameObject bomb;
+
     // Public references
     public Camera mainCamera;
 
     // Private references
     private Rigidbody rb;
     private Transform groundCheck;
+    private Transform bombDropPoint;    // Position where the bombs are dropped/thrown from
 
     // Input varibles
     private float horizontalInput;
     private float verticalInput;
-    private bool takeOff = false;       // Starts as false
+    private bool takeOff = false; 
+    private bool dropBomb = false;
 
     // State variables
     bool grounded = true;
@@ -42,6 +46,7 @@ public class FlyingCharacterController : MonoBehaviour
 
         // Setup references
         rb = GetComponent<Rigidbody>();
+        bombDropPoint = transform.FindChild("Bomb Drop");
     }
 
     // Update is called once per frame
@@ -49,6 +54,14 @@ public class FlyingCharacterController : MonoBehaviour
     {
         InputCollection();
         grounded = CheckIfGrounded();
+        
+        if(!grounded && dropBomb)
+        {
+            DropBomb();
+
+            // Reset flag
+            dropBomb = false;
+        }
     }
 
     void InputCollection()
@@ -56,6 +69,7 @@ public class FlyingCharacterController : MonoBehaviour
         horizontalInput = Input.GetAxis("Horizontal Bird");
         verticalInput = Input.GetAxis("Vertical Bird");
         takeOff = Input.GetButtonDown("Take Off");
+        dropBomb = Input.GetButtonDown("Drop Bomb");
     }
 
     void FixedUpdate()
@@ -118,5 +132,10 @@ public class FlyingCharacterController : MonoBehaviour
         rotation = Mathf.Clamp(rotation + currentRotation, -maxTilt, maxTilt);
 
         transform.rotation = Quaternion.Euler(new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, rotation));
+    }
+
+    void DropBomb()
+    {
+        Instantiate(bomb, bombDropPoint.position, bombDropPoint.rotation);
     }
 }
