@@ -11,9 +11,15 @@ public class FlyingCharacterController : MonoBehaviour
     public float airborneVerticalSpeed;
     public float airborneHorizontalSpeed;
     public float turnSpeed;
-    public float angularTiltSpeed;
-    public float maxTilt;
-    public float tiltSelfCorrectionSpeed; // Value between 0 and 1, determines how fast the character tilts back to rotation 0 when there is no airborne horizontal input
+
+    public float horizontalAngularTiltSpeed;
+    public float horizontalMaxTilt;
+    public float horizontalTiltSelfCorrectionSpeed; // Value between 0 and 1, determines how fast the character tilts back to rotation 0 when there is no airborne horizontal input
+
+    public float verticalAngularTiltSpeed;
+    public float verticalMaxTilt;
+    public float verticalTiltSelfCorrectionSpeed; // Value between 0 and 1, determines how fast the character tilts back to rotation 0 when there is no airborne vertical input
+
     [Tooltip("List of layers that act as ground for this character")]
     public LayerMask whatIsGround;
 
@@ -110,7 +116,8 @@ public class FlyingCharacterController : MonoBehaviour
         // Airborne movement
         else
         {
-            Tilt();
+            HorizontalTilt();
+            VecticalTilt();
 
             // Apply vertical movement
             Vector3 moveDirection = (verticalInput * forward).normalized;
@@ -135,7 +142,7 @@ public class FlyingCharacterController : MonoBehaviour
         return Physics.Raycast(transform.position, -Vector3.up, distToGround + 0.1f);
     }
 
-    void Tilt()
+    void HorizontalTilt()
     {
         // Transform euler angle to negative of positive
         float currentRotation = (transform.eulerAngles.z > 180) ? transform.eulerAngles.z - 360 : transform.eulerAngles.z;
@@ -145,16 +152,42 @@ public class FlyingCharacterController : MonoBehaviour
             tiltSefcorrectionT = 0;     // Reset lerping back to 0
 
             // Calculate rotation
-            float rotation = -1 * angularTiltSpeed * horizontalInput;
+            float rotation = -1 * horizontalAngularTiltSpeed * horizontalInput;
 
-            rotation = Mathf.Clamp(rotation + currentRotation, -maxTilt, maxTilt);
+            rotation = Mathf.Clamp(rotation + currentRotation, -horizontalMaxTilt, horizontalMaxTilt);
 
             transform.rotation = Quaternion.Euler(new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, rotation));
         }
         else
         {
             transform.rotation = Quaternion.Euler(new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, Mathf.Lerp(currentRotation, 0, tiltSefcorrectionT)));
-            tiltSefcorrectionT += tiltSelfCorrectionSpeed;
+            tiltSefcorrectionT += horizontalTiltSelfCorrectionSpeed;
+
+            // Has to be a percentile for lerp to work
+            Mathf.Clamp(tiltSefcorrectionT, 0, 1);
+        }
+    }
+
+    void VecticalTilt()
+    {
+        // Transform euler angle to negative of positive
+        float currentRotation = (transform.eulerAngles.x > 180) ? transform.eulerAngles.x - 360 : transform.eulerAngles.x;
+
+        if (verticalInput != 0)
+        {
+            tiltSefcorrectionT = 0;     // Reset lerping back to 0
+
+            // Calculate rotation
+            float rotation = -1 * verticalAngularTiltSpeed * verticalInput;
+
+            rotation = Mathf.Clamp(rotation + currentRotation, -verticalMaxTilt, verticalMaxTilt);
+
+            transform.rotation = Quaternion.Euler(new Vector3(rotation, transform.eulerAngles.y, transform.eulerAngles.z));
+        }
+        else
+        {
+            transform.rotation = Quaternion.Euler(new Vector3(Mathf.Lerp(currentRotation, 0, tiltSefcorrectionT), transform.eulerAngles.y, transform.eulerAngles.z));
+            tiltSefcorrectionT += verticalTiltSelfCorrectionSpeed;
 
             // Has to be a percentile for lerp to work
             Mathf.Clamp(tiltSefcorrectionT, 0, 1);
