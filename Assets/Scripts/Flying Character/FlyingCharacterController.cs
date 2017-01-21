@@ -18,6 +18,7 @@ public class FlyingCharacterController : MonoBehaviour
     public LayerMask whatIsGround;
 
     public GameObject bomb;
+    public float bombThrowForce;
 
     // Public references
     public Camera mainCamera;
@@ -25,7 +26,7 @@ public class FlyingCharacterController : MonoBehaviour
     // Private references
     private Rigidbody rb;
     private Transform groundCheck;
-    private Transform bombDropPoint;    // Position where the bombs are dropped/thrown from
+    private Transform bombDropPoint;        // Position where the bombs are dropped/thrown from
 
     // Input varibles
     private float horizontalInput;
@@ -162,7 +163,8 @@ public class FlyingCharacterController : MonoBehaviour
 
     void DropBomb()
     {
-        Instantiate(bomb, bombDropPoint.position, bombDropPoint.rotation);
+        GameObject tempBomb = Instantiate(bomb, bombDropPoint.position, bombDropPoint.rotation);
+        tempBomb.GetComponent<Rigidbody>().AddForce(new Vector3(0, -1, 0) * bombThrowForce);
     }
 
     void OnCollisionEnter(Collision col)
