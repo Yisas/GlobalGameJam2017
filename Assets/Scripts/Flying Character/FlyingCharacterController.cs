@@ -10,11 +10,12 @@ public class FlyingCharacterController : MonoBehaviour
     public float verticalTakeoffForce;
     public float airborneVerticalSpeed;
     public float airborneHorizontalSpeed;
+    public float turnSpeed;
     public float angularTiltSpeed;
     public float maxTilt;
-    public float tiltSelfCorrectionSpeed; // Velue between 0 and 1, how fast the character tilts back to 0 when there is no airborne horizontal input
+    public float tiltSelfCorrectionSpeed; // Value between 0 and 1, determines how fast the character tilts back to rotation 0 when there is no airborne horizontal input
     [Tooltip("List of layers that act as ground for this character")]
-    public LayerMask[] whatIsGround;
+    public LayerMask whatIsGround;
 
     public GameObject bomb;
 
@@ -29,6 +30,8 @@ public class FlyingCharacterController : MonoBehaviour
     // Input varibles
     private float horizontalInput;
     private float verticalInput;
+    private float horizontalRightStickInput;
+    private float verticalRightStickInput;
     private bool takeOff = false; 
     private bool dropBomb = false;
 
@@ -72,6 +75,8 @@ public class FlyingCharacterController : MonoBehaviour
     {
         horizontalInput = Input.GetAxis("Horizontal Bird");
         verticalInput = Input.GetAxis("Vertical Bird");
+        horizontalRightStickInput = Input.GetAxis("Horizontal Right Stick");
+        verticalRightStickInput = Input.GetAxis("Vertical Right Stick");
         takeOff = Input.GetButtonDown("Take Off");
         dropBomb = Input.GetButtonDown("Drop Bomb");
     }
@@ -100,8 +105,7 @@ public class FlyingCharacterController : MonoBehaviour
             Vector3 moveDirection = (horizontalInput * right + verticalInput * forward).normalized;
             rb.AddForce(moveDirection * groundSpeed);
 
-            // Reset rotation (from tilt) if grounded
-            transform.rotation = new Quaternion(0, 0, 0, 1);
+            transform.Rotate(up, turnSpeed * horizontalRightStickInput);
         }
 
         // Airborne movement
@@ -117,6 +121,9 @@ public class FlyingCharacterController : MonoBehaviour
             moveDirection = (horizontalInput * right).normalized;
             rb.AddForce(moveDirection * airborneHorizontalSpeed);
         }
+
+        // Turning
+        transform.Rotate(up, turnSpeed * horizontalRightStickInput);
     }
 
     void TakeOff()
@@ -151,12 +158,22 @@ public class FlyingCharacterController : MonoBehaviour
             tiltSefcorrectionT += tiltSelfCorrectionSpeed;
 
             // Has to be a percentile for lerp to work
-            Mathf.Clamp(tiltSefcorrectionT,0,1);
+            Mathf.Clamp(tiltSefcorrectionT, 0, 1);
         }
     }
 
     void DropBomb()
     {
         Instantiate(bomb, bombDropPoint.position, bombDropPoint.rotation);
+    }
+
+    void OnCollisionEnter(Collision col)
+    {
+        
+        if (1 << col.collider.gameObject.layer == whatIsGround && grounded)
+        {
+            // Reset rotation (from tilt) if grounded
+            transform.rotation = Quaternion.Euler(transform.rotation.x, transform.rotation.y, 0);
+        }
     }
 }

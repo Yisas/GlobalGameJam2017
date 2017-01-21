@@ -101,7 +101,7 @@ public class CameraController : MonoBehaviour {
 		if (following){
 			
 			transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.identity, Time.deltaTime);
-			Vector3 directionVector = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+			Vector3 directionVector = new Vector3(Input.GetAxis("Horizontal Ground"), 0, Input.GetAxis("Vertical Ground"));
 			if (directionVector != Vector3.zero) {
 				// Get the length of the directon vector and then normalize it
 				// Dividing by the length is cheaper than normalizing when we already have the length anyway
@@ -119,9 +119,9 @@ public class CameraController : MonoBehaviour {
 				directionVector *= directionLength;
 			}
 	
-            if (directionVector.magnitude > 0.2f && Mathf.Abs(Input.GetAxis("Horizontal")) >= 0.01f){
+            if (directionVector.magnitude > 0.2f && Mathf.Abs(Input.GetAxis("Horizontal Ground")) >= 0.01f){
 				
-				Vector3 vector2 = Vector3.Lerp(player.transform.right * ((Input.GetAxis("Horizontal") >= 0f) ? -1f : 1f), player.transform.forward * ((Input.GetAxis("Vertical") >= 0f) ? 1f : -1f), Mathf.Abs(Vector3.Dot(transform.forward, player.transform.forward)));
+				Vector3 vector2 = Vector3.Lerp(player.transform.right * ((Input.GetAxis("Horizontal Ground") >= 0f) ? -1f : 1f), player.transform.forward * ((Input.GetAxis("Vertical Ground") >= 0f) ? 1f : -1f), Mathf.Abs(Vector3.Dot(transform.forward, player.transform.forward)));
 				lookDir = Vector3.Normalize(playerOffset - transform.position);
 				lookDir.y = 0f;
 				lookDir = Vector3.SmoothDamp(lookDir, vector2, ref velocityLookDir, rotationDampening);
