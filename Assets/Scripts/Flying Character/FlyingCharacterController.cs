@@ -8,10 +8,13 @@ public class FlyingCharacterController : MonoBehaviour
 
     public float groundSpeed;
     public float verticalTakeoffForce;
-    [Tooltip("List of layers that act as ground for this character")]
-    public LayerMask[] whatIsGround;
+    public float airborneVerticalSpeed;
+    public float airborneHorizontalSpeed;
     public float angularTiltSpeed;
     public float maxTilt;
+    public float tiltSelfCorrectionSpeed; // Velue between 0 and 1, how fast the character tilts back to 0 when there is no airborne horizontal input
+    [Tooltip("List of layers that act as ground for this character")]
+    public LayerMask[] whatIsGround;
 
     public GameObject bomb;
 
@@ -37,6 +40,7 @@ public class FlyingCharacterController : MonoBehaviour
 
     // Other variables
     float distToGround;                 // Distance from the center of the bird to the bounds of its collider
+    float tiltSefcorrectionT = 0;       // t for the lerp back to 0 rotation, when there is no horizontal input
 
     // Use this for initialization
     void Start()
@@ -105,9 +109,13 @@ public class FlyingCharacterController : MonoBehaviour
         {
             Tilt();
 
-            // Only apply vertical input (forward or backwards)
+            // Apply vertical movement
             Vector3 moveDirection = (verticalInput * forward).normalized;
-            rb.AddForce(moveDirection * groundSpeed);
+            rb.AddForce(moveDirection * airborneVerticalSpeed);
+
+            // Apply horizontal movement
+            moveDirection = (horizontalInput * right).normalized;
+            rb.AddForce(moveDirection * airborneHorizontalSpeed);
         }
     }
 
@@ -123,15 +131,28 @@ public class FlyingCharacterController : MonoBehaviour
 
     void Tilt()
     {
-        // Calculate rotation
-        float rotation = -1 * angularTiltSpeed * horizontalInput;
-
         // Transform euler angle to negative of positive
         float currentRotation = (transform.eulerAngles.z > 180) ? transform.eulerAngles.z - 360 : transform.eulerAngles.z;
 
-        rotation = Mathf.Clamp(rotation + currentRotation, -maxTilt, maxTilt);
+        if (horizontalInput != 0)
+        {
+            tiltSefcorrectionT = 0;     // Reset lerping back to 0
 
-        transform.rotation = Quaternion.Euler(new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, rotation));
+            // Calculate rotation
+            float rotation = -1 * angularTiltSpeed * horizontalInput;
+
+            rotation = Mathf.Clamp(rotation + currentRotation, -maxTilt, maxTilt);
+
+            transform.rotation = Quaternion.Euler(new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, rotation));
+        }
+        else
+        {
+            transform.rotation = Quaternion.Euler(new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, Mathf.Lerp(currentRotation, 0, tiltSefcorrectionT)));
+            tiltSefcorrectionT += tiltSelfCorrectionSpeed;
+
+            // Has to be a percentile for lerp to work
+            Mathf.Clamp(tiltSefcorrectionT,0,1);
+        }
     }
 
     void DropBomb()
