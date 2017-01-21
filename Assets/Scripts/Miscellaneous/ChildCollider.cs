@@ -15,6 +15,7 @@ public class ChildCollider : MonoBehaviour
 
     void OnCollisionEnter(Collision col)
     {
+        Debug.Log("here");
         parent.GetComponent<ParentCollider>().OnCollisionEnterFromChild(col);
     }
 }

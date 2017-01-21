@@ -3,12 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FlyingCharacterController : MonoBehaviour {
+public class FlyingCharacterController : MonoBehaviour
+{
 
     public float groundSpeed;
     public float verticalTakeoffForce;
     [Tooltip("List of layers that act as ground for this character")]
     public LayerMask[] whatIsGround;
+    public float angularTiltSpeed;
+    public float maxTilt;
 
     // Public references
     public Camera mainCamera;
@@ -32,19 +35,21 @@ public class FlyingCharacterController : MonoBehaviour {
     float distToGround;                 // Distance from the center of the bird to the bounds of its collider
 
     // Use this for initialization
-    void Start () {
+    void Start()
+    {
         // Setup Variables
         distToGround = GetComponent<CapsuleCollider>().bounds.extents.y;
 
         // Setup references
         rb = GetComponent<Rigidbody>();
-	}
-	
-	// Update is called once per frame
-	void Update () {
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
         InputCollection();
         grounded = CheckIfGrounded();
-	}
+    }
 
     void InputCollection()
     {
@@ -76,6 +81,19 @@ public class FlyingCharacterController : MonoBehaviour {
         {
             Vector3 moveDirection = (horizontalInput * right + verticalInput * forward).normalized;
             rb.AddForce(moveDirection * groundSpeed);
+
+            // Reset rotation (from tilt) if grounded
+            transform.rotation = new Quaternion(0, 0, 0, 1);
+        }
+
+        // Airborne movement
+        else
+        {
+            Tilt();
+
+            // Only apply vertical input (forward or backwards)
+            Vector3 moveDirection = (verticalInput * forward).normalized;
+            rb.AddForce(moveDirection * groundSpeed);
         }
     }
 
@@ -86,6 +104,19 @@ public class FlyingCharacterController : MonoBehaviour {
 
     bool CheckIfGrounded()
     {
-       return Physics.Raycast(transform.position, -Vector3.up, distToGround + 0.1f);
+        return Physics.Raycast(transform.position, -Vector3.up, distToGround + 0.1f);
+    }
+
+    void Tilt()
+    {
+        // Calculate rotation
+        float rotation = -1 * angularTiltSpeed * horizontalInput;
+
+        // Transform euler angle to negative of positive
+        float currentRotation = (transform.eulerAngles.z > 180) ? transform.eulerAngles.z - 360 : transform.eulerAngles.z;
+
+        rotation = Mathf.Clamp(rotation + currentRotation, -maxTilt, maxTilt);
+
+        transform.rotation = Quaternion.Euler(new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, rotation));
     }
 }
