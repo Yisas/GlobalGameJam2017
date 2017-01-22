@@ -38,6 +38,8 @@ public class OnTriggerGoTo : MonoBehaviour {
             {
                 target = path.GetPathPoints()[currentWaypoint];
                 ScoreManager.Instance.addScore(100);
+                //increase forward speed by 5%
+                transform.parent.GetComponent<PlayerController>().movement.forwardSpeed *= 1.05f;
             }
             else //end round
             {

@@ -45,6 +45,9 @@ ModelImporter:
     100074: Squirrel.001
     100076: //RootNode
     100078: upperbody
+    100080: Empty
+    100082: Empty.001
+    100084: Empty.002
     400000: ' tail end.002'
     400002: ' tail end.002_end'
     400004: butt tail
@@ -85,8 +88,12 @@ ModelImporter:
     400074: Squirrel.001
     400076: //RootNode
     400078: upperbody
+    400080: Empty
+    400082: Empty.001
+    400084: Empty.002
     4300000: Squirrel.001
     7400000: rig|Running
+    7400002: rig|Running loop fixed
     9500000: //RootNode
     13700000: Squirrel.001
   materials:
