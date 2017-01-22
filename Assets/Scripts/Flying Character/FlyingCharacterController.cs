@@ -48,11 +48,15 @@ public class FlyingCharacterController : MonoBehaviour
     private float verticalRightStickInput;
     private bool takeOff = false;
     private bool dropBomb = false;
+    private bool grabbingTreeButtonPressed = false;
 
     // State variables
     bool grounded = true;
     bool lockMovement = false;
     bool lockRotation = false;
+    bool withinTreeGrabZone = false;        // Flag gets reset at the end of FixedUpdate
+    bool grabTreeAttempt = false;           // The player is trying to grab tree and within the legal conditions to do so
+    bool grabbingTree = false;            // Character is actually grabbing the tree
     Vector3 relativeToCameraForward;        // Direction vectors relative to camera
     Vector3 relativeToCameraRight;
     Vector3 relativeToCameraUp;
@@ -83,6 +87,8 @@ public class FlyingCharacterController : MonoBehaviour
         grounded = CheckIfGrounded();
         anim.SetBool("grounded", grounded);
 
+        grabTreeAttempt = CheckIfGrabTree();
+
         if (!grounded && dropBomb)
         {
             DropBomb();
@@ -90,16 +96,8 @@ public class FlyingCharacterController : MonoBehaviour
             // Reset flag
             dropBomb = false;
         }
-    }
 
-    void InputCollection()
-    {
-        horizontalInput = Input.GetAxis("Horizontal Bird");
-        verticalInput = Input.GetAxis("Vertical Bird");
-        horizontalRightStickInput = Input.GetAxis("Horizontal Right Stick");
-        verticalRightStickInput = Input.GetAxis("Vertical Right Stick");
-        takeOff = Input.GetButtonDown("Take Off");
-        dropBomb = Input.GetButtonDown("Drop Bomb");
+        // Reset this flag every frame, and then let OnTriggerStay do the rest
     }
 
     void FixedUpdate()
@@ -112,10 +110,26 @@ public class FlyingCharacterController : MonoBehaviour
         relativeToCameraUp = mainCamera.transform.TransformDirection(Vector3.up);
         relativeToCameraUp = relativeToCameraUp.normalized;
 
+        GrabTree();
+
         Move();
 
         if (grounded && takeOff)
             TakeOff();
+
+        // Reset this flag every frame, and then let OnTriggerStay do the rest
+        withinTreeGrabZone = false;
+    }
+
+    void InputCollection()
+    {
+        horizontalInput = Input.GetAxis("Horizontal Bird");
+        verticalInput = Input.GetAxis("Vertical Bird");
+        horizontalRightStickInput = Input.GetAxis("Horizontal Right Stick");
+        verticalRightStickInput = Input.GetAxis("Vertical Right Stick");
+        takeOff = Input.GetButtonDown("Take Off");
+        dropBomb = Input.GetButtonDown("Drop Bomb");
+        grabbingTreeButtonPressed = Input.GetButton("Grab Onto Tree");
     }
 
     void Move()
@@ -192,8 +206,17 @@ public class FlyingCharacterController : MonoBehaviour
 
     bool CheckIfGrounded()
     {
-        Debug.DrawRay(transform.position, -transform.up, Color.blue, 1);
+        //Debug.DrawRay(transform.position, -transform.up, Color.blue, 1);
         return Physics.Raycast(transform.position, -transform.up, distToGround + 0.5f);
+    }
+
+    // If you are whithin a Tree Grab Zone layer, airborne and pressing the grab tree button, returns true
+    bool CheckIfGrabTree()
+    {
+        if (withinTreeGrabZone && grabbingTreeButtonPressed && !grounded)
+            return true;
+        else
+            return false;
     }
 
     void HorizontalTilt()
@@ -254,9 +277,12 @@ public class FlyingCharacterController : MonoBehaviour
         tempBomb.GetComponent<Rigidbody>().AddForce(new Vector3(0, -1, 0) * bombThrowForce);
     }
 
-    void StickToTree()
+    void GrabTree()
     {
-
+        if(!grabbingTree && grabTreeAttempt)
+        {
+            Debug.Log("should be locking onto tree");
+        }
     }
 
     void OnCollisionEnter(Collision col)
@@ -271,5 +297,11 @@ public class FlyingCharacterController : MonoBehaviour
             // Reset rotation (from tilt) if grounded
             transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y, 0);
         }
+    }
+
+    void OnTriggerStay(Collider col)
+    {
+        if (col.gameObject.layer == LayerMask.NameToLayer("Tree Grab Zone"))
+            withinTreeGrabZone = true;
     }
 }
