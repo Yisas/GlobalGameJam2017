@@ -266,7 +266,7 @@ public class FlyingCharacterController : MonoBehaviour
 
         if (1 << col.collider.gameObject.layer == whatIsGround && grounded)
         {
-            Debug.Log("Grounding");
+            //Debug.Log("Grounding");
 
             // Reset rotation (from tilt) if grounded
             transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y, 0);
