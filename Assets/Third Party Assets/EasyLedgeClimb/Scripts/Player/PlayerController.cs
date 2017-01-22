@@ -214,10 +214,14 @@ public class PlayerController : Slowable {
 	// Update is called once per frame
 	new void Update () {
         base.Update();
-        if (slowed)
+
+        if (triggerSlow)
         {
             movement.forwardSpeed *= fictitiousTimeScale;
-            slowed = false;
+        }
+        else if(triggerReturn)
+        {
+            movement.forwardSpeed *= 1/fictitiousTimeScale;
         }
 
 		if (currentlyOnWall){
