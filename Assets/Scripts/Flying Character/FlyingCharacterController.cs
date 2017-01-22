@@ -253,7 +253,7 @@ public class FlyingCharacterController : MonoBehaviour
             //Debug.Log("Grounding");
 
             // Reset rotation (from tilt) if grounded
-            transform.rotation = Quaternion.Euler(transform.rotation.x, transform.rotation.y, 0);
+            //transform.rotation = Quaternion.Euler(transform.rotation.x, transform.rotation.y, 0);
         }
     }
 }
