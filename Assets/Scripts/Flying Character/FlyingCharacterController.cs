@@ -77,7 +77,9 @@ public class FlyingCharacterController : MonoBehaviour
     void Update()
     {
         InputCollection();
+
         grounded = CheckIfGrounded();
+        anim.SetBool("grounded",grounded);
 
         if (!grounded && dropBomb)
         {
@@ -121,8 +123,8 @@ public class FlyingCharacterController : MonoBehaviour
         {
             if (rb.velocity.magnitude <= groundedMaxSpeed)
             {
-                Vector3 moveDirection = (horizontalInput * relativeToCameraRight + verticalInput * relativeToCameraForward).normalized;
-                rb.AddForce(moveDirection * groundSpeed);
+                Vector3 moveDirection = transform.forward;
+                rb.AddForce(moveDirection * groundSpeed * verticalInput);
                 anim.SetFloat("moveInput", Mathf.Max(Mathf.Abs(horizontalInput), Mathf.Abs(verticalInput)));
             }
         }
@@ -184,7 +186,7 @@ public class FlyingCharacterController : MonoBehaviour
 
     bool CheckIfGrounded()
     {
-        return Physics.Raycast(transform.position, -Vector3.up, distToGround + 0.1f);
+        return Physics.Raycast(transform.position, -transform.up, distToGround + 0.3f);
     }
 
     void HorizontalTilt()
