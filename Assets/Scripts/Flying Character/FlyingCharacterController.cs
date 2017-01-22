@@ -26,6 +26,7 @@ public class FlyingCharacterController : MonoBehaviour
 
     public GameObject bomb;
     public float bombThrowForce;
+    public GameObject projectileVisualizer;
 
     // Public references
     public Camera mainCamera;
@@ -312,6 +313,8 @@ public class FlyingCharacterController : MonoBehaviour
             rb.velocity = new Vector3(0, 0, 0);
             lockMovement = true;
             rb.useGravity = false;
+
+            projectileVisualizer.SetActive(true);
         }
         else
         {
@@ -322,6 +325,7 @@ public class FlyingCharacterController : MonoBehaviour
                 grabbingTree = false;
                 lockMovement = false;
                 rb.useGravity = true;
+                projectileVisualizer.SetActive(false);
             }
         }
     }
