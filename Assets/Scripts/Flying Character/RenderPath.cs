@@ -5,7 +5,8 @@ using UnityEngine;
 public class RenderPath : MonoBehaviour
 {
     [SerializeField]
-    private float initialVelocity = 10f;
+    // keep this public please. it's not ideal but we're out of time
+    public float initialVelocity = 10f;
     [SerializeField]
     private float timeResolution = 0.02f;
     [SerializeField]

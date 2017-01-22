@@ -27,7 +27,7 @@ public class Bomb : MonoBehaviour
     void OnTriggerEnter(Collider col)
     {
 
-        //Debug.Log("Bomb collided with " + col);
+        Debug.Log("Bomb collided with " + col);
 
         Collider[] collisions = Physics.OverlapSphere(transform.position, aoeRadius);
 

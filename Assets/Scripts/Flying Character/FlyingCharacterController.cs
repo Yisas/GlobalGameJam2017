@@ -26,6 +26,7 @@ public class FlyingCharacterController : MonoBehaviour
 
     public GameObject bomb;
     public float bombThrowForce;
+    public float bombThrowInitialVelocity;
     public GameObject projectileVisualizer;
 
     // Public references
@@ -99,7 +100,7 @@ public class FlyingCharacterController : MonoBehaviour
 
         grabTreeAttempt = CheckIfGrabTree();
 
-        if (!grounded && dropBomb)
+        if (!grounded && dropBomb && !grabbingTree)
         {
             DropBomb();
 
@@ -121,6 +122,12 @@ public class FlyingCharacterController : MonoBehaviour
             mainCamera.transform.localRotation = priorCameraRotation;
             
             overheadCameraActivated = false;
+        }
+
+        if(grabbingTree && dropBomb)
+        {
+            GameObject tempBomb = Instantiate(bomb, bombDropPoint.position, bombDropPoint.rotation);
+            tempBomb.GetComponent<Rigidbody>().velocity = transform.forward * bombThrowInitialVelocity;
         }
     }
 
@@ -315,6 +322,7 @@ public class FlyingCharacterController : MonoBehaviour
             rb.useGravity = false;
 
             projectileVisualizer.SetActive(true);
+            projectileVisualizer.GetComponent<RenderPath>().initialVelocity = bombThrowInitialVelocity;
         }
         else
         {
