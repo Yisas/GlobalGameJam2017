@@ -7,6 +7,7 @@ public class FlyingCharacterController : MonoBehaviour
 {
 
     public float groundSpeed;
+    public float groundedMaxSpeed;
     public float verticalTakeoffForce;
     public float airborneVerticalSpeed;
     public float airborneHorizontalSpeed;
@@ -109,8 +110,11 @@ public class FlyingCharacterController : MonoBehaviour
         // Grounded movement
         if (grounded)
         {
-            Vector3 moveDirection = (horizontalInput * relativeToCameraRight + verticalInput * relativeToCameraForward).normalized;
-            rb.AddForce(moveDirection * groundSpeed);
+            if (rb.velocity.magnitude <= groundedMaxSpeed)
+            {
+                Vector3 moveDirection = (horizontalInput * relativeToCameraRight + verticalInput * relativeToCameraForward).normalized;
+                rb.AddForce(moveDirection * groundSpeed);
+            }
         }
 
         // Airborne movement
@@ -147,7 +151,7 @@ public class FlyingCharacterController : MonoBehaviour
 
         Turn();
     }
-    
+
     // Turning with the right stick
     void Turn()
     {
@@ -156,7 +160,7 @@ public class FlyingCharacterController : MonoBehaviour
         // Turning
         transform.Rotate(Vector3.up, turnSpeed * horizontalRightStickInput);
 
-        if(grounded)
+        if (grounded)
         {
             // If grounded apply prior velocity in the new direction
             rb.velocity = transform.forward * previousVelocity;
