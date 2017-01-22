@@ -281,8 +281,29 @@ public class FlyingCharacterController : MonoBehaviour
     {
         if(!grabbingTree && grabTreeAttempt)
         {
-            Debug.Log("should be locking onto tree");
+            GameObject target = FindClosestTreeTarget();
+            transform.position = target.transform.position;
         }
+    }
+
+    GameObject FindClosestTreeTarget()
+    {
+        GameObject[] gos;
+        gos = GameObject.FindGameObjectsWithTag("Tree Perch Target");
+        GameObject closest = null;
+        float distance = Mathf.Infinity;
+        Vector3 position = transform.position;
+        foreach (GameObject go in gos)
+        {
+            Vector3 diff = go.transform.position - position;
+            float curDistance = diff.sqrMagnitude;
+            if (curDistance < distance)
+            {
+                closest = go;
+                distance = curDistance;
+            }
+        }
+        return closest;
     }
 
     void OnCollisionEnter(Collision col)
