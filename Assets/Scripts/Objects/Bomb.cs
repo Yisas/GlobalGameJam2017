@@ -6,7 +6,7 @@ public class Bomb : MonoBehaviour
 {
     public float aoeRadius;
     public float slowdownMultiplier;
-    public float slowndownPeriod;
+    public float slowdownPeriod;
     public GameObject explosionEffect;
 
     // Private references
@@ -27,17 +27,17 @@ public class Bomb : MonoBehaviour
     void OnTriggerEnter(Collider col)
     {
 
-        Debug.Log("Bomb collided with " + col);
+        //Debug.Log("Bomb collided with " + col);
 
         Collider[] collisions = Physics.OverlapSphere(transform.position, aoeRadius);
 
         foreach (Collider hit in collisions)
         {
-            Debug.Log("Bomb aoe hit " + hit);
+            //Debug.Log("Bomb aoe hit " + hit);
 
             if(hit.tag == "Slowable")
             {
-                hit.gameObject.GetComponent<Slowable>().Slow(slowdownMultiplier, slowndownPeriod);
+                hit.gameObject.GetComponent<Slowable>().Slow(slowdownMultiplier, slowdownPeriod);
             }
         }
 

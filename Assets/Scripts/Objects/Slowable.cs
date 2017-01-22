@@ -7,6 +7,8 @@ public class Slowable : MonoBehaviour
 
     // State variables
     protected bool slowed;
+    protected bool triggerSlow = false;         // Used on child scripts to separate state from trigger.
+    protected bool triggerReturn = false;
 
     // Timers
     protected float slowdownTimer;
@@ -16,13 +18,14 @@ public class Slowable : MonoBehaviour
     {
         fictitiousTimeScale = slowdownMultiplier;
         slowdownTimer = slowdownPeriod;
+        triggerSlow = true;
         slowed = true;
     }
 
     protected void UndoSlowdown()
     {
-        fictitiousTimeScale = 1;
         slowdownTimer = 0;
+        triggerReturn = true;
         slowed = false;
     }
 
@@ -35,9 +38,20 @@ public class Slowable : MonoBehaviour
         }
 
         if (slowed)
+        {
             slowdownTimer -= Time.deltaTime;
 
-        if (slowdownTimer <= 0)
-            UndoSlowdown();
+            if (slowdownTimer <= 0)
+            {
+                UndoSlowdown();
+            }
+        }
+    }
+
+    public virtual void LateUpdate()
+    {
+        // WARNING TO SELF: not sure about this giving problems
+        triggerSlow = false;
+        triggerReturn = false;
     }
 }
