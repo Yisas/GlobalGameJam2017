@@ -21,7 +21,7 @@ public class RenderPath : MonoBehaviour
     void Update()
     {
         Vector3 velocityVector = transform.forward * initialVelocity;
-        lineRenderer.SetVertexCount((int)(maxTime / timeResolution));
+        lineRenderer.numPositions = ((int)(maxTime / timeResolution));
 
         int index = 0;
         Vector3 currentPosition = transform.position;
@@ -29,6 +29,7 @@ public class RenderPath : MonoBehaviour
         {
             lineRenderer.SetPosition(index, currentPosition);
             currentPosition += velocityVector * timeResolution;
+            velocityVector += Physics.gravity * timeResolution;
             ++index;
         }
     }
