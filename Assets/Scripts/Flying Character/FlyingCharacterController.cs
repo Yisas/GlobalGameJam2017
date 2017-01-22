@@ -35,6 +35,12 @@ public class FlyingCharacterController : MonoBehaviour
     private Transform groundCheck;
     private Transform bombDropPoint;        // Position where the bombs are dropped/thrown from
 
+    [Header("------ Animator Variables ------")]
+    // TODO: PRIVATE AND MAKE ME ASSIGN THIS BY MYSELF
+    public Animator anim;
+    public float runningMultiplier;
+
+
     // Input varibles
     private float horizontalInput;
     private float verticalInput;
@@ -240,6 +246,7 @@ public class FlyingCharacterController : MonoBehaviour
 
         if (1 << col.collider.gameObject.layer == whatIsGround && grounded)
         {
+            Debug.Log("Grounding");
             // Reset rotation (from tilt) if grounded
             transform.rotation = Quaternion.Euler(transform.rotation.x, transform.rotation.y, 0);
         }
