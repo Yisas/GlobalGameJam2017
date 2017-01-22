@@ -27,6 +27,7 @@ public class FlyingCharacterController : MonoBehaviour
     public GameObject bomb;
     public float bombThrowForce;
     public float bombThrowInitialVelocity;
+    public float aimingParabolaSpeed;
     public GameObject projectileVisualizer;
 
     // Public references
@@ -98,7 +99,7 @@ public class FlyingCharacterController : MonoBehaviour
         grounded = CheckIfGrounded();
         anim.SetBool("grounded", grounded);
 
-        grabTreeAttempt = CheckIfGrabTree();
+        //grabTreeAttempt = CheckIfGrabTree(); moved to fixed update
 
         if (!grounded && dropBomb && !grabbingTree)
         {
@@ -141,7 +142,9 @@ public class FlyingCharacterController : MonoBehaviour
         relativeToCameraUp = mainCamera.transform.TransformDirection(Vector3.up);
         relativeToCameraUp = relativeToCameraUp.normalized;
 
+        grabTreeAttempt = CheckIfGrabTree();
         GrabTree();
+        AimParabola();
 
         Move();
 
@@ -311,6 +314,17 @@ public class FlyingCharacterController : MonoBehaviour
 
     void GrabTree()
     {
+        if (grabbingTree && Input.GetButtonDown("Grab Onto Tree"))
+        // Release Tree
+        {
+            grabbingTree = false;
+            lockMovement = false;
+            rb.useGravity = true;
+            projectileVisualizer.SetActive(false);
+            return;
+        }
+
+
         if (!grabbingTree && grabTreeAttempt)
         {
             GameObject target = FindClosestTreeTarget();
@@ -323,18 +337,6 @@ public class FlyingCharacterController : MonoBehaviour
 
             projectileVisualizer.SetActive(true);
             projectileVisualizer.GetComponent<RenderPath>().initialVelocity = bombThrowInitialVelocity;
-        }
-        else
-        {
-
-            if (grabbingTree && !grabbingTreeButtonPressed)
-            // Release Tree
-            {
-                grabbingTree = false;
-                lockMovement = false;
-                rb.useGravity = true;
-                projectileVisualizer.SetActive(false);
-            }
         }
     }
 
@@ -356,6 +358,15 @@ public class FlyingCharacterController : MonoBehaviour
             }
         }
         return closest;
+    }
+
+    void AimParabola()
+    {
+        if (grabbingTree)
+        {
+            bombThrowInitialVelocity += verticalInput * aimingParabolaSpeed;
+            projectileVisualizer.GetComponent<RenderPath>().initialVelocity = bombThrowInitialVelocity;
+        }
     }
 
     void OnCollisionEnter(Collision col)
