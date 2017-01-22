@@ -26,6 +26,8 @@ public class FlyingCharacterController : MonoBehaviour
 
     public GameObject bomb;
     public float bombThrowForce;
+    public float bombThrowInitialVelocity;
+    public GameObject projectileVisualizer;
 
     // Public references
     public Camera mainCamera;
@@ -34,13 +36,13 @@ public class FlyingCharacterController : MonoBehaviour
     private Rigidbody rb;
     private Transform groundCheck;
     private Transform bombDropPoint;        // Position where the bombs are dropped/thrown from
+    private Transform overheadCameraTarget;
 
     [Header("------ Animator Variables ------")]
     // TODO: PRIVATE AND MAKE ME ASSIGN THIS BY MYSELF
     public Animator anim;
     public float runningMultiplier;
     public float flyingMultiplier;
-
 
     // Input varibles
     private float horizontalInput;
@@ -50,6 +52,7 @@ public class FlyingCharacterController : MonoBehaviour
     private bool takeOff = false;
     private bool dropBomb = false;
     private bool grabbingTreeButtonPressed = false;
+    public bool aimingButtinPressed = false;
 
     // State variables
     bool grounded = true;
@@ -58,6 +61,7 @@ public class FlyingCharacterController : MonoBehaviour
     bool withinTreeGrabZone = false;        // Flag gets reset at the end of FixedUpdate
     bool grabTreeAttempt = false;           // The player is trying to grab tree and within the legal conditions to do so
     bool grabbingTree = false;            // Character is actually grabbing the tree
+    bool overheadCameraActivated = false;
     Vector3 relativeToCameraForward;        // Direction vectors relative to camera
     Vector3 relativeToCameraRight;
     Vector3 relativeToCameraUp;
@@ -65,15 +69,20 @@ public class FlyingCharacterController : MonoBehaviour
     // Other variables
     float distToGround;                 // Distance from the center of the bird to the bounds of its collider
     float tiltSefcorrectionT = 0;       // t for the lerp back to 0 rotation, when there is no horizontal input
+    Vector3 priorCameraPosition;        // To reset camera from overhead to third person
+    Quaternion priorCameraRotation;
 
     // Use this for initialization
     void Start()
     {
         // Setup Variables
         distToGround = GetComponent<CapsuleCollider>().bounds.extents.y;
+        priorCameraPosition = mainCamera.transform.localPosition;
+        priorCameraRotation = mainCamera.transform.localRotation;
 
         // Setup references
         rb = GetComponent<Rigidbody>();
+        overheadCameraTarget = transform.FindChild("Overhead Camera Target");
         bombDropPoint = transform.FindChild("Bomb Drop");
 
         // Setup animator
@@ -91,7 +100,7 @@ public class FlyingCharacterController : MonoBehaviour
 
         grabTreeAttempt = CheckIfGrabTree();
 
-        if (!grounded && dropBomb)
+        if (!grounded && dropBomb && !grabbingTree)
         {
             DropBomb();
 
@@ -99,7 +108,27 @@ public class FlyingCharacterController : MonoBehaviour
             dropBomb = false;
         }
 
-        // Reset this flag every frame, and then let OnTriggerStay do the rest
+        // Camera work for when on the tree
+        if (aimingButtinPressed && grabbingTree)
+        {
+            mainCamera.transform.position = overheadCameraTarget.position;
+            mainCamera.transform.rotation = overheadCameraTarget.rotation;
+
+            overheadCameraActivated = true;
+        }
+        else if (overheadCameraActivated)
+        {
+            mainCamera.transform.localPosition = priorCameraPosition;
+            mainCamera.transform.localRotation = priorCameraRotation;
+            
+            overheadCameraActivated = false;
+        }
+
+        if(grabbingTree && dropBomb)
+        {
+            GameObject tempBomb = Instantiate(bomb, bombDropPoint.position, bombDropPoint.rotation);
+            tempBomb.GetComponent<Rigidbody>().velocity = transform.forward * bombThrowInitialVelocity;
+        }
     }
 
     void FixedUpdate()
@@ -132,6 +161,7 @@ public class FlyingCharacterController : MonoBehaviour
         takeOff = Input.GetButtonDown("Take Off");
         dropBomb = Input.GetButtonDown("Drop Bomb");
         grabbingTreeButtonPressed = Input.GetButton("Grab Onto Tree");
+        aimingButtinPressed = Input.GetButton("Aim");
     }
 
     void Move()
@@ -290,6 +320,9 @@ public class FlyingCharacterController : MonoBehaviour
             rb.velocity = new Vector3(0, 0, 0);
             lockMovement = true;
             rb.useGravity = false;
+
+            projectileVisualizer.SetActive(true);
+            projectileVisualizer.GetComponent<RenderPath>().initialVelocity = bombThrowInitialVelocity;
         }
         else
         {
@@ -300,6 +333,7 @@ public class FlyingCharacterController : MonoBehaviour
                 grabbingTree = false;
                 lockMovement = false;
                 rb.useGravity = true;
+                projectileVisualizer.SetActive(false);
             }
         }
     }
