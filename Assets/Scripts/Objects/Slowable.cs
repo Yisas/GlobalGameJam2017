@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 public class Slowable : MonoBehaviour
 {
@@ -6,12 +6,21 @@ public class Slowable : MonoBehaviour
     public float fictitiousTimeScale = 1;
 
     // State variables
-    private bool slowed;
+    protected bool slowed;
 
     // Called from external script to slow down this object
     public void Slow(float slowdownMultiplier)
     {
         fictitiousTimeScale *= slowdownMultiplier;
+        slowed = true;
     }
 
+    public virtual void Update()
+    {
+        if (Input.GetButton("Test Button"))
+        {
+            Debug.Log("tewst");
+            Slow(0.1f);
+        }
+    }
 }

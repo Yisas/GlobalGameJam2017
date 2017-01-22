@@ -1,4 +1,4 @@
-﻿/// Easy Ledge Climb Character System / 3D Platformer Kit
+/// Easy Ledge Climb Character System / 3D Platformer Kit
 /// PlayerController.cs
 ///
 /// As long as the player has a CharacterController or Rigidbody component, this script allows the player to:
@@ -16,7 +16,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class PlayerController : MonoBehaviour {
+public class PlayerController : Slowable {
 	
 	public Transform playerCamera; //the camera set to follow the player
 	public float gravity = 20.00f; //the amount of downward force, or "gravity," that is constantly being applied to the player
@@ -212,8 +212,14 @@ public class PlayerController : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void Update () {
-		
+	new void Update () {
+        base.Update();
+        if (slowed)
+        {
+            movement.forwardSpeed *= fictitiousTimeScale;
+            slowed = false;
+        }
+
 		if (currentlyOnWall){
 			jumpedOffWallForWallJump = false;
 		}
