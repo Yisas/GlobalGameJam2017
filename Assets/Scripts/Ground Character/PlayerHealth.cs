@@ -11,6 +11,7 @@ public class PlayerHealth : MonoBehaviour {
     public Text HPLabel;
     public float invulnerabilityTime = 3;
     public float currentInvulnerability;
+    public GameObject harmFx;
 
     void Start()
     {
@@ -47,6 +48,9 @@ public class PlayerHealth : MonoBehaviour {
             Debug.Log("Harm");
             currentInvulnerability = invulnerabilityTime;
             doHarm(1);
+
+            Instantiate(harmFx, collision.transform.position, collision.transform.rotation);
+
 
             if (currentHP <= 0)
             {
