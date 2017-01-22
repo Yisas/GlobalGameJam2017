@@ -78,9 +78,9 @@ public class CameraController : MonoBehaviour {
 		//determining camera state
 		
 		//locking on
-		if (allowLockingOn && (Input.GetButton(lockOnInputButton) || Input.GetAxis(lockOnInputButton) != 0)){
+		if (allowLockingOn && (true || Input.GetAxis(lockOnInputButton) != 0)){
 			
-			barHeight = Mathf.SmoothStep(barHeight, barCoverage * 2f * 2.5f, lockOnSpeed / 4f);
+			barHeight = 0;
 			lockingOn = true;
 			following = false;
 			

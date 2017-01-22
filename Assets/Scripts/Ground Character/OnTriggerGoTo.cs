@@ -14,7 +14,7 @@ public class OnTriggerGoTo : MonoBehaviour {
     private bool updatingTransforms;
 
     public GameObject particlesPrefab;
-    public GameObject lastWaypointParticles;
+    private GameObject lastWaypointParticles;
 
     void Start()
     {
@@ -43,9 +43,13 @@ public class OnTriggerGoTo : MonoBehaviour {
             if (path.GetPathPoints().Length > currentWaypoint)
             {
                 target = path.GetPathPoints()[currentWaypoint];
+                ScoreManager.Instance.addScore(100);
             }
-            else
+            else //end round
             {
+                //increase forward speed by 20%
+                transform.parent.GetComponent<PlayerController>().movement.forwardSpeed *= 1.20f;
+                ScoreManager.Instance.addScore(1000);
                 currentWaypoint = 0;
                 target = path.GetPathPoints()[currentWaypoint];
             }
