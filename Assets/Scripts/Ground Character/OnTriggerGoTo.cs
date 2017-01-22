@@ -13,9 +13,13 @@ public class OnTriggerGoTo : MonoBehaviour {
     public Transform boundariesRotation;
     private bool updatingTransforms;
 
+    public GameObject particlesPrefab;
+    public GameObject lastWaypointParticles;
+
     void Start()
     {
         target = path.GetPathPoints()[currentWaypoint];
+        addParticlesOnWaypoint();
     }
     // Update is called once per frame
     void Update()
@@ -40,8 +44,19 @@ public class OnTriggerGoTo : MonoBehaviour {
             {
                 target = path.GetPathPoints()[currentWaypoint];
             }
+            else
+            {
+                currentWaypoint = 0;
+                target = path.GetPathPoints()[currentWaypoint];
+            }
             lastCollider = other;
-
+            Destroy(lastWaypointParticles);
+            addParticlesOnWaypoint();
         }
+    }
+
+    void addParticlesOnWaypoint()
+    {
+        lastWaypointParticles = Instantiate(particlesPrefab, target + Vector3.up, Quaternion.identity) as GameObject;
     }
 }
