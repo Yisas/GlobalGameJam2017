@@ -51,6 +51,8 @@ public class FlyingCharacterController : MonoBehaviour
 
     // State variables
     bool grounded = true;
+    bool lockMovement = false;
+    bool lockRotation = false;
     Vector3 relativeToCameraForward;        // Direction vectors relative to camera
     Vector3 relativeToCameraRight;
     Vector3 relativeToCameraUp;
@@ -79,7 +81,7 @@ public class FlyingCharacterController : MonoBehaviour
         InputCollection();
 
         grounded = CheckIfGrounded();
-        anim.SetBool("grounded",grounded);
+        anim.SetBool("grounded", grounded);
 
         if (!grounded && dropBomb)
         {
@@ -118,50 +120,54 @@ public class FlyingCharacterController : MonoBehaviour
 
     void Move()
     {
-        // Grounded movement
-        if (grounded)
+        if (!lockMovement)
         {
-            if (rb.velocity.magnitude <= groundedMaxSpeed)
+            // Grounded movement
+            if (grounded)
             {
-                Vector3 moveDirection = transform.forward;
-                rb.AddForce(moveDirection * groundSpeed * verticalInput);
-                anim.SetFloat("moveInput", Mathf.Max(Mathf.Abs(horizontalInput), Mathf.Abs(verticalInput)));
+                if (rb.velocity.magnitude <= groundedMaxSpeed)
+                {
+                    Vector3 moveDirection = transform.forward;
+                    rb.AddForce(moveDirection * groundSpeed * verticalInput);
+                    anim.SetFloat("moveInput", Mathf.Max(Mathf.Abs(horizontalInput), Mathf.Abs(verticalInput)));
+                }
+            }
+
+            // Airborne movement
+            else
+            {
+                HorizontalTilt();
+                VecticalTilt();
+
+                // Direction to apply for in
+                Vector3 moveDirection = new Vector3();
+
+                // Apply vertical movement in the direction of the nose
+                if (verticalInput != 0)
+                {
+                    if (Mathf.Sign(verticalInput) == 1)
+                    {
+                        // Nose tilts down from vertical tilt and force is applied in the same direction of the nose
+                        moveDirection = (transform.forward).normalized;
+                    }
+                    else
+                    {
+                        // Nose tilts up from vertical tilt and force is only aplied on the horizontal plane (0 is zeroed)
+                        moveDirection = (transform.forward).normalized;
+                        moveDirection = new Vector3(moveDirection.x, 0, moveDirection.z);
+                    }
+
+                    rb.AddForce(moveDirection * airborneVerticalSpeed * verticalInput);
+                }
+
+                // Apply horizontal movement
+                moveDirection = (horizontalInput * transform.right).normalized;
+                rb.AddForce(moveDirection * airborneHorizontalSpeed);
             }
         }
 
-        // Airborne movement
-        else
-        {
-            HorizontalTilt();
-            VecticalTilt();
-
-            // Direction to apply for in
-            Vector3 moveDirection = new Vector3();
-
-            // Apply vertical movement in the direction of the nose
-            if (verticalInput != 0)
-            {
-                if (Mathf.Sign(verticalInput) == 1)
-                {
-                    // Nose tilts down from vertical tilt and force is applied in the same direction of the nose
-                    moveDirection = (transform.forward).normalized;
-                }
-                else
-                {
-                    // Nose tilts up from vertical tilt and force is only aplied on the horizontal plane (0 is zeroed)
-                    moveDirection = (transform.forward).normalized;
-                    moveDirection = new Vector3(moveDirection.x, 0, moveDirection.z);
-                }
-
-                rb.AddForce(moveDirection * airborneVerticalSpeed * verticalInput);
-            }
-
-            // Apply horizontal movement
-            moveDirection = (horizontalInput * transform.right).normalized;
-            rb.AddForce(moveDirection * airborneHorizontalSpeed);
-        }
-
-        Turn();
+        if (!lockRotation)
+            Turn();
     }
 
     // Turning with the right stick
@@ -186,7 +192,7 @@ public class FlyingCharacterController : MonoBehaviour
 
     bool CheckIfGrounded()
     {
-        Debug.DrawRay(transform.position, -transform.up, Color.blue,1);
+        Debug.DrawRay(transform.position, -transform.up, Color.blue, 1);
         return Physics.Raycast(transform.position, -transform.up, distToGround + 0.5f);
     }
 
@@ -246,6 +252,11 @@ public class FlyingCharacterController : MonoBehaviour
     {
         GameObject tempBomb = Instantiate(bomb, bombDropPoint.position, bombDropPoint.rotation);
         tempBomb.GetComponent<Rigidbody>().AddForce(new Vector3(0, -1, 0) * bombThrowForce);
+    }
+
+    void StickToTree()
+    {
+
     }
 
     void OnCollisionEnter(Collision col)
