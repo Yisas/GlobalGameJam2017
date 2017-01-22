@@ -453,7 +453,7 @@ public class PlayerController : MonoBehaviour {
 		noCollisionTimer++;
 		
 		//getting the direction to rotate towards
-		Vector3 directionVector = new Vector3(Input.GetAxis("Horizontal Ground"), 0, Input.GetAxis("Vertical Ground"));
+		Vector3 directionVector = new Vector3(Input.GetAxis("Horizontal Ground"), 0, 1);
         if (directionVector != Vector3.zero) {
 			
             //getting the length of the direction vector and normalizing it
@@ -747,7 +747,7 @@ public class PlayerController : MonoBehaviour {
 				wallJumpDirection = Vector3.Lerp(wallJumpDirection, new Vector3(0, wallJumpDirection.y, 0), wallJumping.wallJumpDecelerationRate * Time.deltaTime);
 				if (noCollisionTimer >= 5 && !currentlyOnWall){
 					wallJumpDirection += (Input.GetAxis("Horizontal Ground")*(wallJumping.overallMovementSpeed/8) * playerCamera.transform.right);
-					wallJumpDirection += (Input.GetAxis("Vertical Ground")*(wallJumping.overallMovementSpeed/8) * playerCamera.transform.forward);
+					wallJumpDirection += (1*(wallJumping.overallMovementSpeed/8) * playerCamera.transform.forward);
 					
 					//moving forward
 					if (forwardDir > originalForwardDir){
@@ -826,7 +826,7 @@ public class PlayerController : MonoBehaviour {
 		h = Mathf.Lerp(h, (Mathf.Abs(Input.GetAxisRaw ("Horizontal Ground")) - Mathf.Abs(Input.GetAxisRaw ("Vertical Ground")) + 1)/2, 8 * Time.deltaTime);
 		v = Mathf.Lerp(v, (Mathf.Abs(Input.GetAxisRaw ("Vertical Ground")) - Mathf.Abs(Input.GetAxisRaw ("Horizontal Ground")) + 1)/2, 8 * Time.deltaTime);
 		if (directionVector.magnitude != 0){
-			if (Input.GetAxis("Vertical Ground") >= 0){
+			if (1 >= 0){
 				
 				moveSpeed = (Mathf.Lerp(moveSpeed, h*sideSpeed2 + v*forwardSpeed2, 8 * Time.deltaTime)*directionVector.magnitude)*accelerationRate;
 			
@@ -983,10 +983,10 @@ public class PlayerController : MonoBehaviour {
 		if (grounded.currentlyGrounded && (noCollisionTimer < 5 || Physics.Raycast(pos, Vector3.down, maxGroundedDistance2, collisionLayers))) {
 			//since we are grounded, recalculate move direction directly from axes
 			if (!jumpPerformed){
-				moveDirection = new Vector3(Input.GetAxis("Horizontal Ground"), 0, Input.GetAxis("Vertical Ground"));
+				moveDirection = new Vector3(Input.GetAxis("Horizontal Ground"), 0, 1);
 			}
 			else {
-				moveDirection = new Vector3(Input.GetAxis("Horizontal Ground"), moveDirection.y, Input.GetAxis("Vertical Ground"));
+				moveDirection = new Vector3(Input.GetAxis("Horizontal Ground"), moveDirection.y, 1);
 			}
 			if (directionVector.magnitude != 0){
 				//if the camera is not attached to the player or the player is not moving straight backwards, do not move straight backwards
@@ -1023,7 +1023,7 @@ public class PlayerController : MonoBehaviour {
 			rotationSpeed2 = movement.rotationSpeed;
 		}
 		else {
-			moveDirection = new Vector3(Input.GetAxis("Horizontal Ground"), moveDirection.y, Input.GetAxis("Vertical Ground"));
+			moveDirection = new Vector3(Input.GetAxis("Horizontal Ground"), moveDirection.y, 1);
 			if (directionVector.magnitude != 0){
 				//if the camera is not attached to the player or the player is not moving straight backwards, do not move straight backwards
 				if (playerCamera.transform.parent != transform || Input.GetAxis ("Vertical Ground") >= 0 || Input.GetAxis ("Horizontal Ground") != 0){
