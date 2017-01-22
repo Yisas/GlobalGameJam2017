@@ -15,6 +15,9 @@ public class RenderPath : MonoBehaviour
 
     private LineRenderer lineRenderer;
 
+    public LayerMask layer;
+    public GameObject explosionDisplay;
+    private GameObject explosionDisplayInstance;
 
     // Use this for initialization
     void Start()
@@ -35,6 +38,22 @@ public class RenderPath : MonoBehaviour
         for (float t = 0.0f; t < maxTime - epsilon; t += timeResolution)
         {
             lineRenderer.SetPosition(index, currentPosition);
+
+            RaycastHit hitInfo;
+            if (Physics.Raycast(currentPosition, velocityVector, out hitInfo, velocityVector.magnitude * timeResolution, layer))
+            {
+                lineRenderer.numPositions = index + 2;
+                lineRenderer.SetPosition(index + 1, hitInfo.point);
+                if (explosionDisplayInstance != null)
+                {
+                    explosionDisplayInstance.transform.position = hitInfo.point;
+                }
+                else
+                {
+                    explosionDisplayInstance = Instantiate(explosionDisplay, hitInfo.point, Quaternion.identity) as GameObject;
+                }
+                break;
+            }
             currentPosition += velocityVector * timeResolution;
             velocityVector += Physics.gravity * timeResolution;
             ++index;
