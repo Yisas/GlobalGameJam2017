@@ -186,7 +186,8 @@ public class FlyingCharacterController : MonoBehaviour
 
     bool CheckIfGrounded()
     {
-        return Physics.Raycast(transform.position, -transform.up, distToGround + 0.3f);
+        Debug.DrawRay(transform.position, -transform.up, Color.blue,1);
+        return Physics.Raycast(transform.position, -transform.up, distToGround + 0.5f);
     }
 
     void HorizontalTilt()
@@ -250,12 +251,14 @@ public class FlyingCharacterController : MonoBehaviour
     void OnCollisionEnter(Collision col)
     {
 
+        grounded = CheckIfGrounded();
+
         if (1 << col.collider.gameObject.layer == whatIsGround && grounded)
         {
-            //Debug.Log("Grounding");
+            Debug.Log("Grounding");
 
             // Reset rotation (from tilt) if grounded
-            //transform.rotation = Quaternion.Euler(transform.rotation.x, transform.rotation.y, 0);
+            transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y, 0);
         }
     }
 }
