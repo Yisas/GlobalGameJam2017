@@ -4,9 +4,14 @@ using UnityEngine;
 
 public class RenderPath : MonoBehaviour
 {
-    public float initialVelocity = 10.0f;
-    public float timeResolution = 0.02f;
-    public float maxTime = 10.0f;
+    [SerializeField]
+    private float initialVelocity = 10f;
+    [SerializeField]
+    private float timeResolution = 0.02f;
+    [SerializeField]
+    private float maxTime = 5.0f;
+
+    private float epsilon = 0.0005f;
 
     private LineRenderer lineRenderer;
 
@@ -22,15 +27,20 @@ public class RenderPath : MonoBehaviour
     {
         Vector3 velocityVector = transform.forward * initialVelocity;
         lineRenderer.numPositions = ((int)(maxTime / timeResolution));
+        //lineRenderer.numPositions = 3;
 
         int index = 0;
         Vector3 currentPosition = transform.position;
-        for (float t = 0.0f; t < maxTime; t += timeResolution)
+        //for (float t = 0.0f; t <= 4; t += 2)
+        for (float t = 0.0f; t < maxTime - epsilon; t += timeResolution)
         {
             lineRenderer.SetPosition(index, currentPosition);
             currentPosition += velocityVector * timeResolution;
             velocityVector += Physics.gravity * timeResolution;
             ++index;
+            //print(t);
+            //if (index == 250)
+            //    Debug.Break();
         }
     }
 }

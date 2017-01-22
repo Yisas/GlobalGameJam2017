@@ -6,6 +6,7 @@ public class Bomb : MonoBehaviour
 {
     public float aoeRadius;
     public float slowdownMultiplier;
+    public GameObject explosionEffect;
 
     // Private references
     SphereCollider aoe;
@@ -38,10 +39,13 @@ public class Bomb : MonoBehaviour
                 hit.gameObject.GetComponent<Slowable>().Slow(slowdownMultiplier);
             }
         }
+
+        Explode();
     }
 
     void Explode()
     {
-
+        Instantiate(explosionEffect, transform.position, explosionEffect.transform.rotation);
+        Destroy(this.gameObject);
     }
 }

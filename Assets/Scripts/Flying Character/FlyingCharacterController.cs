@@ -35,6 +35,12 @@ public class FlyingCharacterController : MonoBehaviour
     private Transform groundCheck;
     private Transform bombDropPoint;        // Position where the bombs are dropped/thrown from
 
+    [Header("------ Animator Variables ------")]
+    // TODO: PRIVATE AND MAKE ME ASSIGN THIS BY MYSELF
+    public Animator anim;
+    public float runningMultiplier;
+
+
     // Input varibles
     private float horizontalInput;
     private float verticalInput;
@@ -62,13 +68,18 @@ public class FlyingCharacterController : MonoBehaviour
         // Setup references
         rb = GetComponent<Rigidbody>();
         bombDropPoint = transform.FindChild("Bomb Drop");
+
+        // Setup animator
+        anim.SetFloat("runningMultiplier", runningMultiplier);
     }
 
     // Update is called once per frame
     void Update()
     {
         InputCollection();
+
         grounded = CheckIfGrounded();
+        anim.SetBool("grounded",grounded);
 
         if (!grounded && dropBomb)
         {
@@ -112,8 +123,9 @@ public class FlyingCharacterController : MonoBehaviour
         {
             if (rb.velocity.magnitude <= groundedMaxSpeed)
             {
-                Vector3 moveDirection = (horizontalInput * relativeToCameraRight + verticalInput * relativeToCameraForward).normalized;
-                rb.AddForce(moveDirection * groundSpeed);
+                Vector3 moveDirection = transform.forward;
+                rb.AddForce(moveDirection * groundSpeed * verticalInput);
+                anim.SetFloat("moveInput", Mathf.Max(Mathf.Abs(horizontalInput), Mathf.Abs(verticalInput)));
             }
         }
 
@@ -174,7 +186,7 @@ public class FlyingCharacterController : MonoBehaviour
 
     bool CheckIfGrounded()
     {
-        return Physics.Raycast(transform.position, -Vector3.up, distToGround + 0.1f);
+        return Physics.Raycast(transform.position, -transform.up, distToGround + 0.3f);
     }
 
     void HorizontalTilt()
@@ -240,8 +252,10 @@ public class FlyingCharacterController : MonoBehaviour
 
         if (1 << col.collider.gameObject.layer == whatIsGround && grounded)
         {
+            //Debug.Log("Grounding");
+
             // Reset rotation (from tilt) if grounded
-            transform.rotation = Quaternion.Euler(transform.rotation.x, transform.rotation.y, 0);
+            //transform.rotation = Quaternion.Euler(transform.rotation.x, transform.rotation.y, 0);
         }
     }
 }
