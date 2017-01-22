@@ -119,17 +119,48 @@ public class FlyingCharacterController : MonoBehaviour
             HorizontalTilt();
             VecticalTilt();
 
+            // Direction to apply for in
+            Vector3 moveDirection = new Vector3();
+
             // Apply vertical movement in the direction of the nose
-            Vector3 moveDirection = (verticalInput * transform.forward).normalized;
-            rb.AddForce(moveDirection * airborneVerticalSpeed);
+            if (verticalInput != 0)
+            {
+                if (Mathf.Sign(verticalInput) == 1)
+                {
+                    // Nose tilts down from vertical tilt and force is applied in the same direction of the nose
+                    moveDirection = (transform.forward).normalized;
+                }
+                else
+                {
+                    // Nose tilts up from vertical tilt and force is only aplied on the horizontal plane (0 is zeroed)
+                    moveDirection = (transform.forward).normalized;
+                    moveDirection = new Vector3(moveDirection.x, 0, moveDirection.z);
+                }
+
+                rb.AddForce(moveDirection * airborneVerticalSpeed * verticalInput);
+            }
 
             // Apply horizontal movement
             moveDirection = (horizontalInput * transform.right).normalized;
             rb.AddForce(moveDirection * airborneHorizontalSpeed);
         }
 
+        Turn();
+    }
+    
+    // Turning with the right stick
+    void Turn()
+    {
+        float previousVelocity = rb.velocity.magnitude;
+
         // Turning
         transform.Rotate(Vector3.up, turnSpeed * horizontalRightStickInput);
+
+        if(grounded)
+        {
+            // If grounded apply prior velocity in the new direction
+            rb.velocity = transform.forward * previousVelocity;
+        }
     }
 
     void TakeOff()
