@@ -279,10 +279,26 @@ public class FlyingCharacterController : MonoBehaviour
 
     void GrabTree()
     {
-        if(!grabbingTree && grabTreeAttempt)
+        if (!grabbingTree && grabTreeAttempt)
         {
             GameObject target = FindClosestTreeTarget();
             transform.position = target.transform.position;
+            grabbingTree = true;
+
+            rb.velocity = new Vector3(0, 0, 0);
+            lockMovement = true;
+            rb.useGravity = false;
+        }
+        else
+        {
+
+            if (grabbingTree && !grabbingTreeButtonPressed)
+            // Release Tree
+            {
+                grabbingTree = false;
+                lockMovement = false;
+                rb.useGravity = true;
+            }
         }
     }
 
