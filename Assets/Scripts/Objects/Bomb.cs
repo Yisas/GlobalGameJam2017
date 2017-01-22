@@ -6,6 +6,7 @@ public class Bomb : MonoBehaviour
 {
     public float aoeRadius;
     public float slowdownMultiplier;
+    public float slowndownPeriod;
     public GameObject explosionEffect;
 
     // Private references
@@ -36,7 +37,7 @@ public class Bomb : MonoBehaviour
 
             if(hit.tag == "Slowable")
             {
-                hit.gameObject.GetComponent<Slowable>().Slow(slowdownMultiplier);
+                hit.gameObject.GetComponent<Slowable>().Slow(slowdownMultiplier, slowndownPeriod);
             }
         }
 
