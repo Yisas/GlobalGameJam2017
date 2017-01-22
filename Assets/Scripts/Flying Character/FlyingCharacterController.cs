@@ -39,14 +39,14 @@ public class FlyingCharacterController : MonoBehaviour
     private float verticalInput;
     private float horizontalRightStickInput;
     private float verticalRightStickInput;
-    private bool takeOff = false; 
+    private bool takeOff = false;
     private bool dropBomb = false;
 
     // State variables
     bool grounded = true;
-    Vector3 forward;                    // Direction vectors relative to camera
-    Vector3 right;
-    Vector3 up;
+    Vector3 relativeToCameraForward;        // Direction vectors relative to camera
+    Vector3 relativeToCameraRight;
+    Vector3 relativeToCameraUp;
 
     // Other variables
     float distToGround;                 // Distance from the center of the bird to the bounds of its collider
@@ -68,8 +68,8 @@ public class FlyingCharacterController : MonoBehaviour
     {
         InputCollection();
         grounded = CheckIfGrounded();
-        
-        if(!grounded && dropBomb)
+
+        if (!grounded && dropBomb)
         {
             DropBomb();
 
@@ -91,12 +91,12 @@ public class FlyingCharacterController : MonoBehaviour
     void FixedUpdate()
     {
         // Setup directions relative to camera
-        forward = mainCamera.transform.TransformDirection(Vector3.forward);
-        forward.y = 0;
-        forward = forward.normalized;
-        right = new Vector3(forward.z, 0, -forward.x);
-        up = mainCamera.transform.TransformDirection(Vector3.up);
-        up = up.normalized;
+        relativeToCameraForward = mainCamera.transform.TransformDirection(Vector3.forward);
+        relativeToCameraForward.y = 0;
+        relativeToCameraForward = relativeToCameraForward.normalized;
+        relativeToCameraRight = new Vector3(relativeToCameraForward.z, 0, -relativeToCameraForward.x);
+        relativeToCameraUp = mainCamera.transform.TransformDirection(Vector3.up);
+        relativeToCameraUp = relativeToCameraUp.normalized;
 
         Move();
 
@@ -109,7 +109,7 @@ public class FlyingCharacterController : MonoBehaviour
         // Grounded movement
         if (grounded)
         {
-            Vector3 moveDirection = (horizontalInput * right + verticalInput * forward).normalized;
+            Vector3 moveDirection = (horizontalInput * relativeToCameraRight + verticalInput * relativeToCameraForward).normalized;
             rb.AddForce(moveDirection * groundSpeed);
         }
 
@@ -119,12 +119,12 @@ public class FlyingCharacterController : MonoBehaviour
             HorizontalTilt();
             VecticalTilt();
 
-            // Apply vertical movement
-            Vector3 moveDirection = (verticalInput * forward).normalized;
+            // Apply vertical movement in the direction of the nose
+            Vector3 moveDirection = (verticalInput * transform.forward).normalized;
             rb.AddForce(moveDirection * airborneVerticalSpeed);
 
             // Apply horizontal movement
-            moveDirection = (horizontalInput * right).normalized;
+            moveDirection = (horizontalInput * transform.right).normalized;
             rb.AddForce(moveDirection * airborneHorizontalSpeed);
         }
 
@@ -134,7 +134,7 @@ public class FlyingCharacterController : MonoBehaviour
 
     void TakeOff()
     {
-        rb.AddForce(up * verticalTakeoffForce);
+        rb.AddForce(transform.up * verticalTakeoffForce);
     }
 
     bool CheckIfGrounded()
@@ -178,7 +178,7 @@ public class FlyingCharacterController : MonoBehaviour
             tiltSefcorrectionT = 0;     // Reset lerping back to 0
 
             // Calculate rotation
-            float rotation = -1 * verticalAngularTiltSpeed * verticalInput;
+            float rotation = verticalAngularTiltSpeed * verticalInput;
 
             rotation = Mathf.Clamp(rotation + currentRotation, -verticalMaxTilt, verticalMaxTilt);
 
@@ -202,7 +202,7 @@ public class FlyingCharacterController : MonoBehaviour
 
     void OnCollisionEnter(Collision col)
     {
-        
+
         if (1 << col.collider.gameObject.layer == whatIsGround && grounded)
         {
             // Reset rotation (from tilt) if grounded

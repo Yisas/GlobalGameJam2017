@@ -1,0 +1,168 @@
+fileFormatVersion: 2
+guid: 7bab2803bb5dd1445a93aa2530558fe9
+timeCreated: 1485041149
+licenseType: Free
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: _tail_end_002
+    100002: butt_tail
+    100004: butt_tail_001
+    100006: butt_tail_control
+    100008: Empty
+    100010: Empty_001
+    100012: Empty_002
+    100014: head
+    100016: head_target_ik
+    100018: hip
+    100020: left_back_leg_start
+    100022: left_back_leg_target_ik
+    100024: left_back_leg_tip
+    100026: left_ear_end
+    100028: left_ear_start
+    100030: left_front_leg_start
+    100032: left_front_leg_start_001
+    100034: left_front_leg_target_ik
+    100036: rig
+    100038: right_back_leg_start
+    100040: right_back_leg_target_ik
+    100042: right_back_leg_tip
+    100044: right_ear_end
+    100046: right_ear_start
+    100048: right_front_leg_start
+    100050: right_front_leg_target_ik
+    100052: right_front_leg_tip
+    100054: Squirrel
+    100056: Squirrel_001
+    100058: Squirrel_002
+    100060: Squirrel_003
+    100062: Squirrel_004
+    100064: Squirrel_005
+    100066: Squirrel_006
+    100068: Squirrel_007
+    100070: //RootNode
+    100072: upperbody
+    400000: _tail_end_002
+    400002: butt_tail
+    400004: butt_tail_001
+    400006: butt_tail_control
+    400008: Empty
+    400010: Empty_001
+    400012: Empty_002
+    400014: head
+    400016: head_target_ik
+    400018: hip
+    400020: left_back_leg_start
+    400022: left_back_leg_target_ik
+    400024: left_back_leg_tip
+    400026: left_ear_end
+    400028: left_ear_start
+    400030: left_front_leg_start
+    400032: left_front_leg_start_001
+    400034: left_front_leg_target_ik
+    400036: rig
+    400038: right_back_leg_start
+    400040: right_back_leg_target_ik
+    400042: right_back_leg_tip
+    400044: right_ear_end
+    400046: right_ear_start
+    400048: right_front_leg_start
+    400050: right_front_leg_target_ik
+    400052: right_front_leg_tip
+    400054: Squirrel
+    400056: Squirrel_001
+    400058: Squirrel_002
+    400060: Squirrel_003
+    400062: Squirrel_004
+    400064: Squirrel_005
+    400066: Squirrel_006
+    400068: Squirrel_007
+    400070: //RootNode
+    400072: upperbody
+    4300000: Squirrel_007
+    4300002: Squirrel_006
+    4300004: Squirrel_005
+    4300006: Squirrel_004
+    4300008: Squirrel_003
+    4300010: Squirrel_002
+    4300012: Squirrel_001
+    4300014: Squirrel
+    7400000: Default Take
+    7400002: Running
+    9500000: //RootNode
+    13700000: Squirrel
+    13700002: Squirrel_001
+    13700004: Squirrel_002
+    13700006: Squirrel_003
+    13700008: Squirrel_004
+    13700010: Squirrel_005
+    13700012: Squirrel_006
+    13700014: Squirrel_007
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
