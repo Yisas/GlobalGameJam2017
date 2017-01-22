@@ -39,6 +39,7 @@ public class FlyingCharacterController : MonoBehaviour
     // TODO: PRIVATE AND MAKE ME ASSIGN THIS BY MYSELF
     public Animator anim;
     public float runningMultiplier;
+    public float flyingMultiplier;
 
 
     // Input varibles
@@ -77,6 +78,7 @@ public class FlyingCharacterController : MonoBehaviour
 
         // Setup animator
         anim.SetFloat("runningMultiplier", runningMultiplier);
+        anim.SetFloat("flyingMultiplier", flyingMultiplier);
     }
 
     // Update is called once per frame
