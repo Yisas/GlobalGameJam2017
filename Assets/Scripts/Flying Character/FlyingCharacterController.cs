@@ -53,7 +53,7 @@ public class FlyingCharacterController : MonoBehaviour
     private bool takeOff = false;
     private bool dropBomb = false;
     private bool grabbingTreeButtonPressed = false;
-    public bool aimingButtinPressed = false;
+    private bool aimingButtinPressed = false;
 
     // State variables
     bool grounded = true;
