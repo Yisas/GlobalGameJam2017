@@ -148,7 +148,7 @@ public class FlyingCharacterController : MonoBehaviour
 
         Move();
 
-        if (grounded && takeOff)
+        if (grounded && takeOff && !lockMovement)
             TakeOff();
 
         // Reset this flag every frame, and then let OnTriggerStay do the rest
