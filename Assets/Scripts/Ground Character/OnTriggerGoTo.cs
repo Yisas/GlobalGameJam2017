@@ -16,10 +16,12 @@ public class OnTriggerGoTo : MonoBehaviour
     private Vector3 target;
     public float damping = 14;
     private Collider lastCollider;
-    private bool updatingTransforms;
 
     public GameObject particlesPrefab;
     private GameObject lastWaypointParticles;
+
+    private float moveDelay = 0.2f;
+    public float currentDelay = 0;
 
     void Start()
     {
@@ -30,39 +32,50 @@ public class OnTriggerGoTo : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetAxis("Horizontal Ground") > 0)
-        {
-            if (path == centerPath)
+        currentDelay -= Time.deltaTime;
+        if(currentDelay < 0)
+        { 
+            if (Input.GetAxis("Horizontal Ground") > 0)
             {
-                path = rightPath;
+                currentDelay = moveDelay;
+                if (path == centerPath)
+                {
+                    transform.parent.GetComponent<Rigidbody>().AddForce(transform.right * 9000);
+                    path = rightPath;
+                }
+                else if (path == leftPath)
+                {
+                    transform.parent.GetComponent<Rigidbody>().AddForce(transform.right * 9000);
+                    path = centerPath;
+                }
+
+                target = path.GetPathPoints()[currentWaypoint];
+                Destroy(lastWaypointParticles);
+                addParticlesOnWaypoint();
+
+                currentDelay += moveDelay;
             }
-            if (path == leftPath)
+            else if (Input.GetAxis("Horizontal Ground") < 0)
             {
-                path = centerPath;
+                currentDelay = moveDelay;
+                if (path == centerPath)
+                {
+                    transform.parent.GetComponent<Rigidbody>().AddForce(-transform.right * 9000);
+                    path = leftPath;
+                }
+                if (path == rightPath)
+                {
+                    transform.parent.GetComponent<Rigidbody>().AddForce(-transform.right * 9000);
+                    path = centerPath;
+                }
+
+                target = path.GetPathPoints()[currentWaypoint];
+                Destroy(lastWaypointParticles);
+                addParticlesOnWaypoint();
+
+                currentDelay += moveDelay;
             }
-
-            Destroy(lastWaypointParticles);
-            addParticlesOnWaypoint();
-
-            target = path.GetPathPoints()[currentWaypoint];
         }
-        else if (Input.GetAxis("Horizontal Ground") < 0)
-        {
-            if (path == centerPath)
-            {
-                path = leftPath;
-            }
-            if (path == rightPath)
-            {
-                path = centerPath;
-            }
-
-            Destroy(lastWaypointParticles);
-            addParticlesOnWaypoint();
-
-            target = path.GetPathPoints()[currentWaypoint];
-        }
-
 
         var lookPos = target - transform.parent.position;
         lookPos.y = 0;
