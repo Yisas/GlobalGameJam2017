@@ -248,6 +248,10 @@ public class FlyingCharacterController : MonoBehaviour
     // If you are whithin a Tree Grab Zone layer, airborne and pressing the grab tree button, returns true
     bool CheckIfGrabTree()
     {
+        Debug.Log("Within tree grab zone: " + withinTreeGrabZone);
+        //Debug.Log("Grabbing tree button pressed: " + grabbingTreeButtonPressed);
+        //Debug.Log("Grounded: " + grounded);
+
         if (withinTreeGrabZone && grabbingTreeButtonPressed && !grounded)
             return true;
         else
@@ -324,7 +328,8 @@ public class FlyingCharacterController : MonoBehaviour
             return;
         }
 
-
+        //Debug.Log("Grabbing tree: " + grabbingTree);
+        //Debug.Log("Grabbing tree attempt: " + grabTreeAttempt);
         if (!grabbingTree && grabTreeAttempt)
         {
             GameObject target = FindClosestTreeTarget();
