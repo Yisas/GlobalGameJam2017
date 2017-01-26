@@ -18,16 +18,17 @@ using UnityEngine;
 using System.Collections;
 
 public class LedgeClimbController : MonoBehaviour {
-	
-	public bool showMainRaysOnly = false; //show only the main detector rays
+    private string horizontalGroundKey = "Horizontal Ground None";
+
+    public bool showMainRaysOnly = false; //show only the main detector rays
 	public bool stayUpright = true; //only rotate to the left and right, not up and down
 	public bool inheritScale = false; //set the scale of the rays to the scale of the script holder
 	public float onLedgeHeight = 0.0f; //determines the player's up distance/height while grabbed on to a ledge
 	public float ledgeAngleLimit = 25.00f; //the maximum angle of a ledge you can grab on to
 	public float distanceToPushOffOfLedgeAfterLettingGo = 0.5f; //the distance the player pushes off of a ledge after letting go
 	public float maxGroundedDistance = 0.2f; //the maximum distance you can be from the ground to be considered grounded
-	
-	[System.Serializable]
+    private string groundMovKey = "Horizontal Ground";
+    [System.Serializable]
 	public class ClimbingDetectors {
 		public float pullUpSpeed = 4; //the speed the player pulls up and over ledges
 		public bool allowClimbingOverLedgesIfInAir = true; //allows player to climb over a ledge that he is currently grabbed on to in mid-air
@@ -3280,7 +3281,7 @@ public class LedgeClimbController : MonoBehaviour {
 		}
 		
 		//getting the direction of the joystick/arrow keys
-		directionVector = new Vector3(Input.GetAxis("Horizontal Ground"), 0, Input.GetAxis("Vertical Ground"));
+		directionVector = new Vector3(Input.GetAxis(horizontalGroundKey), 0, Input.GetAxis("Vertical Ground"));
         if (directionVector != Vector3.zero) {
 			
             //getting the length of the direction vector and normalizing it
@@ -3300,7 +3301,7 @@ public class LedgeClimbController : MonoBehaviour {
 		if (!turnBack){
 			ledgeJumpPossible = true;
 			//checking to see if either side of a ledge is blocked
-			if (Input.GetAxisRaw("Horizontal Ground") != 0 || Input.GetAxisRaw("Vertical Ground") != 0){
+			if (Input.GetAxisRaw(horizontalGroundKey) != 0 || Input.GetAxisRaw("Vertical Ground") != 0){
 				if (currentStatesOfVariables.grounded && !climbable && !Physics.Linecast(transform.position + posChange1 + upHeight*0.5f, transform.position + posChange1 + forwardLength/1.5f + upHeight*0.5f + spaceInFrontNeededToGrabBackOn2, out hit, collisionLayers) && !back2 && !grabbedOn && !pullingUp){
 					if (!Physics.Linecast(transform.position + posChange1 + forwardLength/4 + upHeight*0.5f + spaceBelowNeededToGrabBackOnForward2, transform.position + posChange1 + forwardLength/4 - upHeight*1.5f - spaceBelowNeededToGrabBackOnHeight2 + spaceBelowNeededToGrabBackOnForward2, out hit, collisionLayers) && !Physics.Linecast(transform.position + posChange1 + forwardLength/1.5f + upHeight*0.5f + spaceInFrontNeededToGrabBackOn2, transform.position + posChange1 + forwardLength/1.5f - upHeight*1.5f + spaceInFrontNeededToGrabBackOn2 - spaceBelowNeededToGrabBackOnHeight2, out hit, collisionLayers)
 					|| canJumpOffLedge && walkingOffLedgeDetectors.allowJumpingOffLedges){
@@ -3911,10 +3912,10 @@ public class LedgeClimbController : MonoBehaviour {
 		
 		
 			//checking to see if you are too close to the ground to go right or left
-			if (Input.GetAxisRaw("Horizontal Ground") > 0f && !Physics.Linecast(transform.position + posChange1 + upHeight + (rightWidth/4) + minDistFromGroundWidth2, transform.position + posChange1 - upHeight/3 + (rightWidth/4) + minDistFromGroundHeight2 + minDistFromGroundWidth2, out hit, collisionLayers)){
+			if (Input.GetAxisRaw(horizontalGroundKey) > 0f && !Physics.Linecast(transform.position + posChange1 + upHeight + (rightWidth/4) + minDistFromGroundWidth2, transform.position + posChange1 - upHeight/3 + (rightWidth/4) + minDistFromGroundHeight2 + minDistFromGroundWidth2, out hit, collisionLayers)){
 				movingRight = true;
 			}
-			else if (Input.GetAxisRaw("Horizontal Ground") < 0f && !Physics.Linecast(transform.position + posChange1 + upHeight - (rightWidth/4) - minDistFromGroundWidth2, transform.position + posChange1 - upHeight/3 - (rightWidth/4) + minDistFromGroundHeight2 - minDistFromGroundWidth2, out hit, collisionLayers)){
+			else if (Input.GetAxisRaw(horizontalGroundKey) < 0f && !Physics.Linecast(transform.position + posChange1 + upHeight - (rightWidth/4) - minDistFromGroundWidth2, transform.position + posChange1 - upHeight/3 - (rightWidth/4) + minDistFromGroundHeight2 - minDistFromGroundWidth2, out hit, collisionLayers)){
 				movingRight = false;
 			}
 			
@@ -3999,10 +4000,10 @@ public class LedgeClimbController : MonoBehaviour {
 			}
 		
 			RaycastHit hit2 = new RaycastHit();
-			if (Input.GetAxisRaw("Horizontal Ground") > 0f && Physics.Raycast(transform.position + posChange2 + (upHeight + midSidePosChange)*1.1f, rightWidth/2, out hit, 5f, collisionLayers) && Physics.Raycast(transform.position + posChange2 + (upHeight + midSidePosChange)*0.5f, forwardLength/4, out hit2, 5f, collisionLayers) && Vector3.Distance(transform.position + transform.up, hit.point) < Vector3.Distance(transform.position, hit2.point)){
+			if (Input.GetAxisRaw(horizontalGroundKey) > 0f && Physics.Raycast(transform.position + posChange2 + (upHeight + midSidePosChange)*1.1f, rightWidth/2, out hit, 5f, collisionLayers) && Physics.Raycast(transform.position + posChange2 + (upHeight + midSidePosChange)*0.5f, forwardLength/4, out hit2, 5f, collisionLayers) && Vector3.Distance(transform.position + transform.up, hit.point) < Vector3.Distance(transform.position, hit2.point)){
 				movingToSide = true;
 			}
-			else if (Input.GetAxisRaw("Horizontal Ground") < 0f && Physics.Raycast(transform.position + posChange2 + (upHeight + midSidePosChange)*1.1f, -rightWidth/2, out hit, 5f, collisionLayers) && Physics.Raycast(transform.position + posChange2 + (upHeight + midSidePosChange)*0.5f, forwardLength/4, out hit2, 5f, collisionLayers) && Vector3.Distance(transform.position + transform.up, hit.point) < Vector3.Distance(transform.position, hit2.point)){
+			else if (Input.GetAxisRaw(horizontalGroundKey) < 0f && Physics.Raycast(transform.position + posChange2 + (upHeight + midSidePosChange)*1.1f, -rightWidth/2, out hit, 5f, collisionLayers) && Physics.Raycast(transform.position + posChange2 + (upHeight + midSidePosChange)*0.5f, forwardLength/4, out hit2, 5f, collisionLayers) && Vector3.Distance(transform.position + transform.up, hit.point) < Vector3.Distance(transform.position, hit2.point)){
 				movingToSide = true;
 			}
 			else{
@@ -4013,7 +4014,7 @@ public class LedgeClimbController : MonoBehaviour {
 			if (!switching || !ledgeSwitchingDetectors.allowLedgeSwitching){
 				
 				//only change the rotation normal if player is moving
-				if ((transform.rotation == lastRot3 || axisChanged) && (movementSpeed > 0 || Input.GetAxis("Horizontal Ground") != 0) || hasNotMovedOnLedgeYet){
+				if ((transform.rotation == lastRot3 || axisChanged) && (movementSpeed > 0 || Input.GetAxis(horizontalGroundKey) != 0) || hasNotMovedOnLedgeYet){
 					
 					if (Physics.Raycast(transform.position + posChange2 + midSidePosChange*0.5f, forwardLength/4, out hit, 1f, collisionLayers) && !Physics.Raycast(transform.position + posChange2 + (upHeight + midSidePosChange)*1.1f, forwardLength, out hit, 1f, collisionLayers)
 					&& !Physics.Raycast(transform.position + midSidePosChange + posChange2 + upHeight*1.1f, forwardLength + rightWidth/2, out hit, 1f, collisionLayers) && !Physics.Raycast(transform.position + midSidePosChange + posChange2 + upHeight*1.1f, forwardLength - rightWidth/2, out hit, 1f, collisionLayers) && ((Mathf.Acos(Mathf.Clamp(hit.normal.y, -1f, 1f))) * 57.2958f) >= 45){
@@ -4203,20 +4204,20 @@ public class LedgeClimbController : MonoBehaviour {
 						rotationState = 0;
 					}
 					
-					if (movementSpeed > 0 || Input.GetAxis("Horizontal Ground") != 0){
+					if (movementSpeed > 0 || Input.GetAxis(horizontalGroundKey) != 0){
 						hasNotMovedOnLedgeYet = false;
 						hasNotMovedOnLedgeAsideFromLedgeSwitchingYet = false;
 					}
 				}
 				
 				//checking to see if player changed their direction from left to right/right to left
-				if ((Input.GetAxis("Horizontal Ground") > 0 && horizontalAxis <= 0 || Input.GetAxis("Horizontal Ground") < 0 && horizontalAxis >= 0)){
+				if ((Input.GetAxis(horizontalGroundKey) > 0 && horizontalAxis <= 0 || Input.GetAxis(horizontalGroundKey) < 0 && horizontalAxis >= 0)){
 					axisChanged = true;
 				}
 				else if (transform.rotation == lastRot3 && climbPossible && climbPossibleL && climbPossibleR){
 					axisChanged = false;
 				}
-				horizontalAxis = Input.GetAxis("Horizontal Ground");
+				horizontalAxis = Input.GetAxis(horizontalGroundKey);
 				lastRot3 = transform.rotation;
 				
 				//rotating the player
@@ -4308,7 +4309,7 @@ public class LedgeClimbController : MonoBehaviour {
 			RightMovement();
 			
 			//not moving to either side
-			if (Input.GetAxis ("Horizontal Ground") == 0){
+			if (Input.GetAxis (horizontalGroundKey) == 0){
 				movementSpeed = 0;
 			}
 			
@@ -4342,7 +4343,7 @@ public class LedgeClimbController : MonoBehaviour {
 				turnedBackToLedge = true;
 				
 			}
-			else if (!turnBack && !back2 && turnedBackToLedge && Input.GetAxis("Horizontal Ground") != 0){
+			else if (!turnBack && !back2 && turnedBackToLedge && Input.GetAxis(horizontalGroundKey) != 0){
 				turnedBackToLedge = false;
 			}
 			
@@ -4357,7 +4358,7 @@ public class LedgeClimbController : MonoBehaviour {
 				
 				if (!switchJumping){
 					animator.SetFloat ("ledgeAngle", ledgeAngle);
-					if (Input.GetAxis("Horizontal Ground") > 0 && movingDetectors.moveSpeed > 0){
+					if (Input.GetAxis(horizontalGroundKey) > 0 && movingDetectors.moveSpeed > 0){
 					
 						animator.speed = ((movingDetectors.moveSpeed/3)/movingDetectors.burstLength)/((movingDetectors.moveSpeed*2)/(3 + movingDetectors.moveSpeed));
 						
@@ -4385,7 +4386,7 @@ public class LedgeClimbController : MonoBehaviour {
 							animator.SetFloat ("ledgeSpeed", 2);
 						}
 					}
-					else if (Input.GetAxis("Horizontal Ground") < 0 && movingDetectors.moveSpeed > 0){
+					else if (Input.GetAxis(horizontalGroundKey) < 0 && movingDetectors.moveSpeed > 0){
 					
 						animator.speed = ((movingDetectors.moveSpeed/3)/movingDetectors.burstLength)/((movingDetectors.moveSpeed*2)/(3 + movingDetectors.moveSpeed));
 						
@@ -4494,7 +4495,7 @@ public class LedgeClimbController : MonoBehaviour {
 	
 	void LedgeGrabbingAxisDetection () {
 		
-		if (Input.GetAxisRaw("Horizontal Ground") != 0 || Input.GetAxisRaw("Vertical Ground") != 0){
+		if (Input.GetAxisRaw(horizontalGroundKey) != 0 || Input.GetAxisRaw("Vertical Ground") != 0){
 
 			//grab on to ledge
 			if (!currentStatesOfVariables.grounded && !turnBack && !back2
@@ -4741,7 +4742,7 @@ public class LedgeClimbController : MonoBehaviour {
 		
 		//moving left
 		if (left){
-			if (Input.GetAxis ("Horizontal Ground") < 0 && lSide != Vector3.zero && !stuckToLeft){
+			if (Input.GetAxis (horizontalGroundKey) < 0 && lSide != Vector3.zero && !stuckToLeft){
 				
 				if (!leftBlocked){
 					
@@ -4779,12 +4780,12 @@ public class LedgeClimbController : MonoBehaviour {
 					transform.position = new Vector3(transform.position.x, (playerPosY + onLedgeHeight2/10), transform.position.z);
 				}
 			}
-			else if (GetComponent<Rigidbody>() && (Input.GetAxis ("Horizontal Ground") == 0 || stuckToLeft)){
+			else if (GetComponent<Rigidbody>() && (Input.GetAxis (horizontalGroundKey) == 0 || stuckToLeft)){
 				GetComponent<Rigidbody>().velocity = Vector3.zero;
 				movementVector = Vector3.zero;
 			}
 				
-			if (Input.GetAxis ("Horizontal Ground") >= 0){
+			if (Input.GetAxis (horizontalGroundKey) >= 0){
 				startingLeft = true;
 			}
 		}
@@ -4792,7 +4793,7 @@ public class LedgeClimbController : MonoBehaviour {
 	}
 	void LeftSwitchPointDetecting () {
 		
-		if ((!switching || !ledgeSwitchingDetectors.allowLedgeSwitching) && grabbedOn && !turnBack && !back2 && Input.GetAxis ("Horizontal Ground") <= -ledgeSwitchingDetectors.inputPercentageNeededToSwitch/100 && directionVector.magnitude >= ledgeSwitchingDetectors.inputPercentageNeededToSwitch/100){
+		if ((!switching || !ledgeSwitchingDetectors.allowLedgeSwitching) && grabbedOn && !turnBack && !back2 && Input.GetAxis (horizontalGroundKey) <= -ledgeSwitchingDetectors.inputPercentageNeededToSwitch/100 && directionVector.magnitude >= ledgeSwitchingDetectors.inputPercentageNeededToSwitch/100){
 			
 			//1
 			//second forward
@@ -4986,7 +4987,7 @@ public class LedgeClimbController : MonoBehaviour {
 		
 		//moving right
 		if (right){
-			if (Input.GetAxis ("Horizontal Ground") > 0 && rSide != Vector3.zero && !stuckToRight){
+			if (Input.GetAxis (horizontalGroundKey) > 0 && rSide != Vector3.zero && !stuckToRight){
 			
 				if (!rightBlocked){
 					
@@ -5024,12 +5025,12 @@ public class LedgeClimbController : MonoBehaviour {
 					transform.position = new Vector3(transform.position.x, (playerPosY + onLedgeHeight2/10), transform.position.z);
 				}
 			}
-			else if (GetComponent<Rigidbody>() && (Input.GetAxis ("Horizontal Ground") == 0 || stuckToRight)){
+			else if (GetComponent<Rigidbody>() && (Input.GetAxis (horizontalGroundKey) == 0 || stuckToRight)){
 				GetComponent<Rigidbody>().velocity = Vector3.zero;
 				movementVector = Vector3.zero;
 			}
 			
-			if (Input.GetAxis ("Horizontal Ground") <= 0){
+			if (Input.GetAxis (horizontalGroundKey) <= 0){
 				startingRight = true;
 			}
 		}
@@ -5037,7 +5038,7 @@ public class LedgeClimbController : MonoBehaviour {
 	}
 	void RightSwitchPointDetecting () {
 		
-		if ((!switching || !ledgeSwitchingDetectors.allowLedgeSwitching) && grabbedOn && !turnBack && !back2 && Input.GetAxis ("Horizontal Ground") >= ledgeSwitchingDetectors.inputPercentageNeededToSwitch/100 && directionVector.magnitude >= ledgeSwitchingDetectors.inputPercentageNeededToSwitch/100){
+		if ((!switching || !ledgeSwitchingDetectors.allowLedgeSwitching) && grabbedOn && !turnBack && !back2 && Input.GetAxis (horizontalGroundKey) >= ledgeSwitchingDetectors.inputPercentageNeededToSwitch/100 && directionVector.magnitude >= ledgeSwitchingDetectors.inputPercentageNeededToSwitch/100){
 			
 			//1
 			//second forward
@@ -5335,11 +5336,11 @@ public class LedgeClimbController : MonoBehaviour {
 	void CheckIfStuck () {
 		
 		//if rightMovable is true, then we are not stuck on the right side
-		if (rightMovable || Input.GetAxisRaw("Horizontal Ground") < 0 && currentStatesOfVariables.leftMovementPossible){
+		if (rightMovable || Input.GetAxisRaw(horizontalGroundKey) < 0 && currentStatesOfVariables.leftMovementPossible){
 			stuckToRight = false;
 		}
 		//if leftMovable is true, then we are not stuck on the left side
-		if (leftMovable || Input.GetAxisRaw("Horizontal Ground") > 0 && currentStatesOfVariables.rightMovementPossible){
+		if (leftMovable || Input.GetAxisRaw(horizontalGroundKey) > 0 && currentStatesOfVariables.rightMovementPossible){
 			stuckToLeft = false;
 		}
 		
@@ -5351,8 +5352,8 @@ public class LedgeClimbController : MonoBehaviour {
 			stuckInSamePosNoCol = true;
 		}
 		//checking to see if player is stuck on a collider
-		if (grabbedOn && (!switching || !ledgeSwitchingDetectors.allowLedgeSwitching) && movementSpeed > 0 && (Input.GetAxisRaw("Horizontal Ground") > 0 && currentStatesOfVariables.rightMovementPossible
-		|| Input.GetAxisRaw("Horizontal Ground") < 0 && currentStatesOfVariables.leftMovementPossible || Input.GetAxisRaw("Horizontal Ground") == 0) || pullingUp){
+		if (grabbedOn && (!switching || !ledgeSwitchingDetectors.allowLedgeSwitching) && movementSpeed > 0 && (Input.GetAxisRaw(horizontalGroundKey) > 0 && currentStatesOfVariables.rightMovementPossible
+		|| Input.GetAxisRaw(horizontalGroundKey) < 0 && currentStatesOfVariables.leftMovementPossible || Input.GetAxisRaw(horizontalGroundKey) == 0) || pullingUp){
 			
 			//checking to see if player is stuck on either side
 			if (climbable && climbableL && climbableR){
@@ -5361,12 +5362,12 @@ public class LedgeClimbController : MonoBehaviour {
 			}
 			else if (Vector3.Distance(transform.position, lastPos) > 0.0001f && Vector3.Distance(transform.position, lastPos) < 0.01f && transform.position.y == lastPos.y && (!climbable || !climbableL || !climbableR)){
 				//stuck on right side
-				if (Input.GetAxisRaw("Horizontal Ground") >= 0 && !rightMovable && climbPossible && climbPossibleR
+				if (Input.GetAxisRaw(horizontalGroundKey) >= 0 && !rightMovable && climbPossible && climbPossibleR
 				&& Physics.Linecast(transform.position + posChange2 + upHeight/2 + forwardLength/1.52f + upHeight*0.9f + (ledgeDetectorHeight2*(0.65f - (topOfLedgeSurfaceDetectorHeight2*0.59f)) + (ledgeDetectorForward2*(0.65f - (topOfLedgeSurfaceDetectorHeight2*0.59f))) + rodHoldingLedgeDetectorHeight2 + rodHoldingLedgeDetectorForward2 + transform.forward*(topOfLedgeSurfaceDetectorHeight2*length2)*0.14f + transform.up*(topOfLedgeSurfaceDetectorHeight2*height2)) + rightWidth/4, transform.position + posChange2 + upHeight*0.8f + forwardLength/1.75f + (ledgeDetectorHeight2 + ledgeDetectorForward2 + rodHoldingLedgeDetectorHeight2 + rodHoldingLedgeDetectorForward2) + rightWidth/4, out hit, collisionLayers) && ((Mathf.Acos(Mathf.Clamp(hit.normal.y, -1f, 1f))) * 57.2958f) <= ledgeAngleLimit){
 					stuckToRight = true;
 				}
 				//stuck on left side
-				if (Input.GetAxisRaw("Horizontal Ground") <= 0 && !leftMovable && climbPossible && climbPossibleL
+				if (Input.GetAxisRaw(horizontalGroundKey) <= 0 && !leftMovable && climbPossible && climbPossibleL
 				&& Physics.Linecast(transform.position + posChange2 + upHeight/2 + forwardLength/1.52f + upHeight*0.9f + (ledgeDetectorHeight2*(0.65f - (topOfLedgeSurfaceDetectorHeight2*0.59f)) + (ledgeDetectorForward2*(0.65f - (topOfLedgeSurfaceDetectorHeight2*0.59f))) + rodHoldingLedgeDetectorHeight2 + rodHoldingLedgeDetectorForward2 + transform.forward*(topOfLedgeSurfaceDetectorHeight2*length2)*0.14f + transform.up*(topOfLedgeSurfaceDetectorHeight2*height2)) - rightWidth/4, transform.position + posChange2 + upHeight*0.8f + forwardLength/1.75f + (ledgeDetectorHeight2 + ledgeDetectorForward2 + rodHoldingLedgeDetectorHeight2 + rodHoldingLedgeDetectorForward2) - rightWidth/4, out hit, collisionLayers) && ((Mathf.Acos(Mathf.Clamp(hit.normal.y, -1f, 1f))) * 57.2958f) <= ledgeAngleLimit){
 					stuckToLeft = true;
 				}
@@ -5379,7 +5380,7 @@ public class LedgeClimbController : MonoBehaviour {
 				if (noCollisionTimer < 5 && (Physics.Linecast(transform.position + posChange1 + upHeight, transform.position + posChange1 + forwardLength/2 + upHeight, out hit, collisionLayers) || Physics.Linecast(transform.position + posChange1 + upHeight*1.1f, transform.position + posChange1 + forwardLength/2 + upHeight*1.1f, out hit, collisionLayers) || Physics.Linecast(transform.position + posChange1 + upHeight*1.2f, transform.position + posChange1 + forwardLength/2 + upHeight*1.2f, out hit, collisionLayers))){
 					distFromWall = Vector3.Distance(new Vector3(hit.point.x, 0, hit.point.z), new Vector3(transform.position.x, 0, transform.position.z));
 				}
-				if (Input.GetAxisRaw("Horizontal Ground") > 0.1f && currentStatesOfVariables.rightMovementPossible || Input.GetAxisRaw("Horizontal Ground") < -0.1f && currentStatesOfVariables.leftMovementPossible){
+				if (Input.GetAxisRaw(horizontalGroundKey) > 0.1f && currentStatesOfVariables.rightMovementPossible || Input.GetAxisRaw(horizontalGroundKey) < -0.1f && currentStatesOfVariables.leftMovementPossible){
 					stuckInSamePos = true;
 				}
 			}

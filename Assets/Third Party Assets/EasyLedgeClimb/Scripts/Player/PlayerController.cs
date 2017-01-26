@@ -17,8 +17,9 @@ using UnityEngine;
 using System.Collections;
 
 public class PlayerController : Slowable {
-	
-	public Transform playerCamera; //the camera set to follow the player
+    private string horizontalGroundKey = "Horizontal Ground None";
+
+    public Transform playerCamera; //the camera set to follow the player
 	public float gravity = 20.00f; //the amount of downward force, or "gravity," that is constantly being applied to the player
 	public float slopeLimit = 25.00f; //the maximum angle of a slope you can stand on without sliding down
 	
@@ -136,8 +137,8 @@ public class PlayerController : Slowable {
 	private float accelerationRate; //how fast the player is accelerating
 	private float deceleration = 1; //how fast the player will reach the speed of 0
 	private float decelerationRate; //how fast the player is decelerating
-	private float h; //the absolute value of the "Horizontal Ground" axis minus the absolute value of the "Vertical Ground" axis
-	private float v; //the absolute value of the "Vertical Ground" axis minus the absolute value of the "Horizontal Ground" axis
+	private float h; //the absolute value of the horizontalGroundKey axis minus the absolute value of the "Vertical Ground" axis
+	private float v; //the absolute value of the "Vertical Ground" axis minus the absolute value of the horizontalGroundKey axis
 	private bool inBetweenSlidableSurfaces; //determines whether you are in between two slidable surfaces or not
 	private bool uphill; //determines whether you are going uphill on a slope or not
 	private bool angHit; //determines whether or not a raycast going straight down (with a distance of 1) is hitting
@@ -463,7 +464,7 @@ public class PlayerController : Slowable {
 		noCollisionTimer++;
 		
 		//getting the direction to rotate towards
-		Vector3 directionVector = new Vector3(Input.GetAxis("Horizontal Ground"), 0, 1);
+		Vector3 directionVector = new Vector3(Input.GetAxis(horizontalGroundKey), 0, 1);
         if (directionVector != Vector3.zero) {
 			
             //getting the length of the direction vector and normalizing it
@@ -756,7 +757,7 @@ public class PlayerController : Slowable {
 				originalWallJumpDirection = Vector3.Lerp(originalWallJumpDirection, new Vector3(0, originalWallJumpDirection.y, 0), wallJumping.wallJumpDecelerationRate * Time.deltaTime);
 				wallJumpDirection = Vector3.Lerp(wallJumpDirection, new Vector3(0, wallJumpDirection.y, 0), wallJumping.wallJumpDecelerationRate * Time.deltaTime);
 				if (noCollisionTimer >= 5 && !currentlyOnWall){
-					wallJumpDirection += (Input.GetAxis("Horizontal Ground")*(wallJumping.overallMovementSpeed/8) * playerCamera.transform.right);
+					wallJumpDirection += (Input.GetAxis(horizontalGroundKey)*(wallJumping.overallMovementSpeed/8) * playerCamera.transform.right);
 					wallJumpDirection += (1*(wallJumping.overallMovementSpeed/8) * playerCamera.transform.forward);
 					
 					//moving forward
@@ -808,14 +809,14 @@ public class PlayerController : Slowable {
 		//if joystick/arrow keys are being pushed
 		if (directionVector.magnitude > 0 && !currentlyOnWall){
 			
-			float myAngle = Mathf.Atan2 (Input.GetAxis ("Horizontal Ground"), Input.GetAxis ("Vertical Ground")) * Mathf.Rad2Deg;
+			float myAngle = Mathf.Atan2 (Input.GetAxis (horizontalGroundKey), Input.GetAxis ("Vertical Ground")) * Mathf.Rad2Deg;
 			float bodyRotation = myAngle + playerCamera.eulerAngles.y;
 			//if in mid-air from wall jumping, rotate using the rotationSpeedMultiple
 			if (inMidAirFromWallJump){
 				transform.rotation = Quaternion.Lerp (transform.rotation, Quaternion.Euler(0, bodyRotation, 0), (rotationSpeed2*wallJumping.rotationSpeedMultiple) * Time.deltaTime);
 			}
 			//if the camera is not attached to the player or the player is not moving straight backwards, continue to rotate
-			else if (playerCamera.transform.parent != transform || Input.GetAxis ("Vertical Ground") >= 0 || Input.GetAxis ("Horizontal Ground") != 0){
+			else if (playerCamera.transform.parent != transform || Input.GetAxis ("Vertical Ground") >= 0 || Input.GetAxis (horizontalGroundKey) != 0){
 				transform.rotation = Quaternion.Lerp (transform.rotation, Quaternion.Euler(0, bodyRotation, 0), rotationSpeed2 * Time.deltaTime);
 			}
 			
@@ -833,8 +834,8 @@ public class PlayerController : Slowable {
 		}
 		
 		//setting the speed of the player
-		h = Mathf.Lerp(h, (Mathf.Abs(Input.GetAxisRaw ("Horizontal Ground")) - Mathf.Abs(Input.GetAxisRaw ("Vertical Ground")) + 1)/2, 8 * Time.deltaTime);
-		v = Mathf.Lerp(v, (Mathf.Abs(Input.GetAxisRaw ("Vertical Ground")) - Mathf.Abs(Input.GetAxisRaw ("Horizontal Ground")) + 1)/2, 8 * Time.deltaTime);
+		h = Mathf.Lerp(h, (Mathf.Abs(Input.GetAxisRaw (horizontalGroundKey)) - Mathf.Abs(Input.GetAxisRaw ("Vertical Ground")) + 1)/2, 8 * Time.deltaTime);
+		v = Mathf.Lerp(v, (Mathf.Abs(Input.GetAxisRaw ("Vertical Ground")) - Mathf.Abs(Input.GetAxisRaw (horizontalGroundKey)) + 1)/2, 8 * Time.deltaTime);
 		if (directionVector.magnitude != 0){
 			if (1 >= 0){
 				
@@ -993,14 +994,14 @@ public class PlayerController : Slowable {
 		if (grounded.currentlyGrounded && (noCollisionTimer < 5 || Physics.Raycast(pos, Vector3.down, maxGroundedDistance2, collisionLayers))) {
 			//since we are grounded, recalculate move direction directly from axes
 			if (!jumpPerformed){
-				moveDirection = new Vector3(Input.GetAxis("Horizontal Ground"), 0, 1);
+				moveDirection = new Vector3(Input.GetAxis(horizontalGroundKey), 0, 1);
 			}
 			else {
-				moveDirection = new Vector3(Input.GetAxis("Horizontal Ground"), moveDirection.y, 1);
+				moveDirection = new Vector3(Input.GetAxis(horizontalGroundKey), moveDirection.y, 1);
 			}
 			if (directionVector.magnitude != 0){
 				//if the camera is not attached to the player or the player is not moving straight backwards, do not move straight backwards
-				if (playerCamera.transform.parent != transform || Input.GetAxis ("Vertical Ground") >= 0 || Input.GetAxis ("Horizontal Ground") != 0){
+				if (playerCamera.transform.parent != transform || Input.GetAxis ("Vertical Ground") >= 0 || Input.GetAxis (horizontalGroundKey) != 0){
 					moveDirection = new Vector3(transform.forward.x, moveDirection.y, transform.forward.z);
 				}
 				//if the camera is attached to the player and the player is moving straight backwards, move straight backwards
@@ -1013,7 +1014,7 @@ public class PlayerController : Slowable {
 			
 			if (directionVector.magnitude == 0){
 				//if the camera is not attached to the player or the player is not moving straight backwards, do not move straight backwards
-				if (playerCamera.transform.parent != transform || Input.GetAxis ("Vertical Ground") >= 0 || Input.GetAxis ("Horizontal Ground") != 0){
+				if (playerCamera.transform.parent != transform || Input.GetAxis ("Vertical Ground") >= 0 || Input.GetAxis (horizontalGroundKey) != 0){
 					moveDirection = new Vector3(transform.forward.x, moveDirection.y, transform.forward.z);
 				}
 				//if the camera is attached to the player and the player is moving straight backwards, move straight backwards
@@ -1033,10 +1034,10 @@ public class PlayerController : Slowable {
 			rotationSpeed2 = movement.rotationSpeed;
 		}
 		else {
-			moveDirection = new Vector3(Input.GetAxis("Horizontal Ground"), moveDirection.y, 1);
+			moveDirection = new Vector3(Input.GetAxis(horizontalGroundKey), moveDirection.y, 1);
 			if (directionVector.magnitude != 0){
 				//if the camera is not attached to the player or the player is not moving straight backwards, do not move straight backwards
-				if (playerCamera.transform.parent != transform || Input.GetAxis ("Vertical Ground") >= 0 || Input.GetAxis ("Horizontal Ground") != 0){
+				if (playerCamera.transform.parent != transform || Input.GetAxis ("Vertical Ground") >= 0 || Input.GetAxis (horizontalGroundKey) != 0){
 					moveDirection = new Vector3(transform.forward.x, moveDirection.y, transform.forward.z);
 				}
 				//if the camera is attached to the player and the player is moving straight backwards, move straight backwards
