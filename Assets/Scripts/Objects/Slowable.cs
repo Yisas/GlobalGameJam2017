@@ -6,7 +6,8 @@ public class Slowable : MonoBehaviour
     public float fictitiousTimeScale = 1;
 
     // State variables
-    protected bool slowed;
+    [HideInInspector]
+    public bool slowed;
     protected bool triggerSlow = false;         // Used on child scripts to separate state from trigger.
     protected bool triggerReturn = false;
 

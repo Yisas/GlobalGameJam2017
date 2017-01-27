@@ -7,6 +7,7 @@ public class Bomb : MonoBehaviour
     public float aoeRadius;
     public float slowdownMultiplier;
     public float slowdownPeriod;
+    public float aoeTimer;
     public GameObject explosionEffect;
 
     // Private references
@@ -48,7 +49,11 @@ public class Bomb : MonoBehaviour
 
     void Explode()
     {
-        Instantiate(explosionEffect, transform.position, explosionEffect.transform.rotation);
+        GameObject aoeEffect = Instantiate(explosionEffect, transform.position, explosionEffect.transform.rotation);
+        aoe.GetComponent<AOESlow>().slowdownMultiplier = slowdownMultiplier;
+        aoe.GetComponent<AOESlow>().slowdownPeriod = slowdownPeriod;
+        aoe.GetComponent<AOESlow>().TimerStart(aoeTimer);
+
         Destroy(this.gameObject);
     }
 }
