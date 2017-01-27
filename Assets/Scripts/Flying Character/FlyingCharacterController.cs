@@ -9,9 +9,11 @@ public class FlyingCharacterController : MonoBehaviour
     public float groundSpeed;
     public float groundedMaxSpeed;
     public float verticalTakeoffForce;
+    public float constantThrustersForce;
     public float airborneVerticalSpeed;
     public float airborneHorizontalSpeed;
     public float turnSpeed;
+    public float airborneMaxSpeed;
 
     public float horizontalAngularTiltSpeed;
     public float horizontalMaxTilt;
@@ -188,30 +190,40 @@ public class FlyingCharacterController : MonoBehaviour
                 HorizontalTilt();
                 VecticalTilt();
 
-                // Direction to apply for in
                 Vector3 moveDirection = new Vector3();
+                Vector3 forwardDirection = (transform.forward).normalized;
+                Vector3 horizontalProjectionForwardDirection = Vector3.Project(forwardDirection, new Vector3(forwardDirection.x, 0, forwardDirection.z));
 
                 // Apply vertical movement in the direction of the nose
                 if (verticalInput != 0)
                 {
-                    if (Mathf.Sign(verticalInput) == 1)
+                    // Nose tilts down from vertical tilt and force is applied in the same direction of the nose
+                    // Substract horizontal component of the forward vector
+                    moveDirection = forwardDirection - horizontalProjectionForwardDirection;
+
+                    if (verticalInput < 0)
                     {
-                        // Nose tilts down from vertical tilt and force is applied in the same direction of the nose
-                        moveDirection = (transform.forward).normalized;
-                    }
-                    else
-                    {
-                        // Nose tilts up from vertical tilt and force is only aplied on the horizontal plane (0 is zeroed)
-                        moveDirection = (transform.forward).normalized;
-                        moveDirection = new Vector3(moveDirection.x, 0, moveDirection.z);
+                        // Nose tilts up, needs correction in sign direction sign
+                        moveDirection.x *= -1;
+                        moveDirection.y *= -1;
                     }
 
                     rb.AddForce(moveDirection * airborneVerticalSpeed * verticalInput);
                 }
 
                 // Apply horizontal movement
-                moveDirection = (horizontalInput * transform.right).normalized;
-                rb.AddForce(moveDirection * airborneHorizontalSpeed);
+                moveDirection = (transform.right).normalized + (- Mathf.Sign(horizontalInput) * (transform.forward).normalized);
+                moveDirection.y = 0;
+
+                //Debug.DrawLine(transform.position, transform.position + (moveDirection * 100), Color.blue, 5);
+                rb.AddForce(moveDirection * airborneHorizontalSpeed * horizontalInput);
+
+                // Apply force on the horizontal projection of the forward plane
+                // NOTE TO SELF: NOT 100% SURE THIS MATH IS CORRECT
+                float magnitudeInHorizontalPlane = Vector3.Project(rb.velocity,horizontalProjectionForwardDirection).magnitude;
+                
+                if(magnitudeInHorizontalPlane <= airborneMaxSpeed)
+                    rb.AddForce(horizontalProjectionForwardDirection * constantThrustersForce);
             }
         }
 
@@ -227,16 +239,15 @@ public class FlyingCharacterController : MonoBehaviour
         // Turning
         transform.Rotate(Vector3.up, turnSpeed * horizontalRightStickInput);
 
-        if (grounded)
-        {
-            // If grounded apply prior velocity in the new direction
-            rb.velocity = transform.forward * previousVelocity;
-        }
+        // Apply prior velocity in the new direction
+        rb.velocity = transform.forward * previousVelocity;
+
     }
 
     void TakeOff()
     {
         rb.AddForce(transform.up * verticalTakeoffForce);
+        rb.useGravity = false;
     }
 
     bool CheckIfGrounded()
@@ -323,7 +334,6 @@ public class FlyingCharacterController : MonoBehaviour
         {
             grabbingTree = false;
             lockMovement = false;
-            rb.useGravity = true;
             projectileVisualizer.SetActive(false);
             return;
         }
@@ -338,7 +348,6 @@ public class FlyingCharacterController : MonoBehaviour
 
             rb.velocity = new Vector3(0, 0, 0);
             lockMovement = true;
-            rb.useGravity = false;
 
             projectileVisualizer.SetActive(true);
             projectileVisualizer.GetComponent<RenderPath>().initialVelocity = bombThrowInitialVelocity;
