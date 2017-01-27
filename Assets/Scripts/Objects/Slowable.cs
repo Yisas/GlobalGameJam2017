@@ -14,7 +14,7 @@ public class Slowable : MonoBehaviour
     protected float slowdownTimer;
 
     // Called from external script to slow down this object
-    public void Slow(float slowdownMultiplier, float slowdownPeriod)
+    public virtual void Slow(float slowdownMultiplier, float slowdownPeriod)
     {
         fictitiousTimeScale = slowdownMultiplier;
         slowdownTimer = slowdownPeriod;
@@ -22,7 +22,7 @@ public class Slowable : MonoBehaviour
         slowed = true;
     }
 
-    protected void UndoSlowdown()
+    protected virtual void UndoSlowdown()
     {
         slowdownTimer = 0;
         triggerReturn = true;

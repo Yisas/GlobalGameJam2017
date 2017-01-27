@@ -37,6 +37,8 @@ public class Bomb : MonoBehaviour
 
             if(hit.tag == "Slowable")
             {
+                //Debug.Log("Bomb hit slowable object " + hit);
+
                 hit.gameObject.GetComponent<Slowable>().Slow(slowdownMultiplier, slowdownPeriod);
             }
         }
