@@ -50,9 +50,9 @@ public class Bomb : MonoBehaviour
     void Explode()
     {
         GameObject aoeEffect = Instantiate(explosionEffect, transform.position, explosionEffect.transform.rotation);
-        aoe.GetComponent<AOESlow>().slowdownMultiplier = slowdownMultiplier;
-        aoe.GetComponent<AOESlow>().slowdownPeriod = slowdownPeriod;
-        aoe.GetComponent<AOESlow>().TimerStart(aoeTimer);
+        aoeEffect.GetComponent<AOESlow>().slowdownMultiplier = slowdownMultiplier;
+        aoeEffect.GetComponent<AOESlow>().slowdownPeriod = slowdownPeriod;
+        aoeEffect.GetComponent<AOESlow>().TimerStart(aoeTimer);
 
         Destroy(this.gameObject);
     }

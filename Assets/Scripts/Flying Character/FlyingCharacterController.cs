@@ -121,11 +121,11 @@ public class FlyingCharacterController : MonoBehaviour
         {
             mainCamera.transform.localPosition = priorCameraPosition;
             mainCamera.transform.localRotation = priorCameraRotation;
-            
+
             overheadCameraActivated = false;
         }
 
-        if(grabbingTree && dropBomb)
+        if (grabbingTree && dropBomb)
         {
             GameObject tempBomb = Instantiate(bomb, bombDropPoint.position, bombDropPoint.rotation);
             tempBomb.GetComponent<Rigidbody>().velocity = transform.forward * bombThrowInitialVelocity;
