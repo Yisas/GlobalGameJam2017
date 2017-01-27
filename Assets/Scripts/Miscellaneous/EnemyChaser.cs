@@ -13,11 +13,8 @@ public class EnemyChaser :  Slowable {
 	}
 	
 	// Update is called once per frame
-	void Update () {
-
-        // deleteme
-        if (Input.GetButtonDown("Test Button"))
-            fictitiousTimeScale *= 0.5f;
+	public override void Update () {
+        base.Update();
 
         float step = speed * Time.deltaTime * fictitiousTimeScale;
         transform.position = Vector3.MoveTowards(transform.position, target.position, step);

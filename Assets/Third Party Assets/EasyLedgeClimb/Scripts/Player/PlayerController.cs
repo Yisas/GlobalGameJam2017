@@ -218,11 +218,15 @@ public class PlayerController : Slowable {
 
         if (triggerSlow)
         {
+            Debug.Log("Slow triggered. Previous forward speed: " + movement.forwardSpeed);
             movement.forwardSpeed *= fictitiousTimeScale;
+            Debug.Log("Posterior forward speed: " + movement.forwardSpeed);
         }
         else if(triggerReturn)
         {
+            Debug.Log("Return triggered. Previous forward speed: " + movement.forwardSpeed);
             movement.forwardSpeed *= 1/fictitiousTimeScale;
+            Debug.Log("Posterior forward speed " + movement.forwardSpeed);
         }
 
 		if (currentlyOnWall){
